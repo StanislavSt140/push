@@ -112,11 +112,7 @@ fun PushNavHost(navController: NavHostController) {
         }
 
         composable(Screen.CreateProduct.route) {
-            CreateProductScreen(
-                navController = navController,
-                marketApiService = RetrofitClient.marketApi,
-                coroutineScope = rememberCoroutineScope()
-            ).RenderScreen()
+            CreateProductScreen(navController, RetrofitClient.marketApi, rememberCoroutineScope())
         }
         composable(Screen.ProductDetail.route) { backStackEntry ->
             val productId = backStackEntry.arguments?.getString("productId")?.toIntOrNull()
