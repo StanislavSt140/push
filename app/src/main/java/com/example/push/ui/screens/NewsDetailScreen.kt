@@ -1,0 +1,71 @@
+package com.example.push.ui.screens
+
+import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
+import com.example.push.data.NewsItem
+import com.example.push.data.RetrofitClient
+import com.example.push.navigation.Screen
+import com.example.push.ui.components.AppHeader
+import kotlinx.coroutines.launch
+@Composable
+fun NewsDetailScreen(newsId: Int, navController: NavController) {
+    var newsItem by remember { mutableStateOf<NewsItem?>(null) }
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(newsId) {
+        scope.launch {
+            val response = RetrofitClient.api.getNews()
+            newsItem = response.news.find { it.id == newsId }
+        }
+    }
+
+    AppHeader(navController, newsItem?.title ?: "Loading...") { // ⬅ Динамічно передаємо заголовок
+        Crossfade(targetState = newsItem) { news ->
+            if (news != null) {
+                Column(modifier = Modifier.fillMaxSize().padding(top = 16.dp)) {
+                    Spacer(modifier = Modifier.height(84.dp))
+                    Text(
+                        text = news.title,
+                        style = MaterialTheme.typography.headlineLarge,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        color = Color(0xFF03736A)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Image(
+                        painter = rememberAsyncImagePainter(news.imageUrl),
+                        contentDescription = null,
+                        modifier = Modifier.height(250.dp).fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Text(
+                        text = news.content,
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Button(
+                        onClick = { navController.navigate(Screen.News.route) },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF03736A))
+                    ) {
+                        Text("Назад", color = Color.White)
+                    }
+                }
+            } else {
+                CircularProgressIndicator(modifier = Modifier.padding(16.dp)) // ⬅ Анімація завантаження
+            }
+        }
+    }
+}

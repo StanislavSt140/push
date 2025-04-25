@@ -1,0 +1,116 @@
+package com.example.push.market
+
+import android.util.Log
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Text
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
+import com.example.push.market.RetrofitClient
+import com.example.push.ui.components.AppHeader
+import kotlinx.coroutines.launch
+
+@Composable
+fun ProductDetailScreen(productId: Int, navController: NavController) {
+    val product = remember { mutableStateOf<ProductItem?>(null) }
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(productId) {
+        scope.launch {
+            try {
+                val response = RetrofitClient.marketApi.getProductDetail(productId)
+                if (response.status == "success") {
+                    product.value = response.data ?: ProductItem(
+                        id = productId, title = "Невідомий товар", description = "Опис відсутній",
+                        price = 0.0, discountPrice = null, imageUrl = "", categoryId = null
+                    )
+                }
+                Log.d("ProductDetailScreen", "${response.status}: ${response.data} ${productId}")
+            } catch (e: Exception) {
+                Log.d("ProductDetailScreen", " ${productId} ${e.message}")
+                Log.d("ProductDetailScreen", "Помилка завантаження деталей товару: ${e.message}")
+            }
+        }
+    }
+
+    AppHeader(navController, "Деталі товару") {
+        Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+            product.value?.let {item ->
+                Column(
+                    modifier = Modifier.fillMaxSize().padding(top = 86.dp) // ⬅ Коригуємо відступи
+                ) {
+                    Image(
+                        painter = rememberAsyncImagePainter(item.imageUrl),
+                        contentDescription = null,
+                        modifier = Modifier.height(250.dp).fillMaxWidth().clip(RoundedCornerShape(12.dp)) // ⬅ Закруглюємо кути
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // 🔥 Оформлення цін
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column {
+                            if (item.discountPrice != null) {
+                                Text(
+                                    "₴${item.discountPrice}",
+                                    style = MaterialTheme.typography.titleLarge,
+                                    color = Color.Red
+                                )
+                                Text(
+                                    "₴${item.price}",
+                                    style = MaterialTheme.typography.bodyMedium.copy(textDecoration = TextDecoration.LineThrough),
+                                    color = Color.Gray
+                                ) // ⬅ Перечеркнута стара ціна
+                            } else {
+                                Text("₴${item.price}", style = MaterialTheme.typography.titleLarge)
+                            }
+                        }
+
+
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // 📖 Опис товару з прокручуванням
+                    Box(modifier = Modifier.fillMaxWidth().weight(1f)) {
+                        Text(
+                            item.description,
+                            style = MaterialTheme.typography.titleLarge,
+                            modifier = Modifier.verticalScroll(rememberScrollState()) // ⬅ Додаємо прокручування!
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // 🔙 Кнопка "Назад"
+                    Button(
+                        onClick = { navController.popBackStack() },
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 36.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF03736A),  // ⬅ Замість backgroundColor використовуємо containerColor
+                            contentColor = Color.White   // ⬅ Колір тексту залишаємо
+                        )
+                    ) {
+                        Text("Назад", style = MaterialTheme.typography.bodyLarge, color = Color.White)
+                    }
+                }
+            } ?: Text("Завантаження...")
+        }
+    }
+}
+
