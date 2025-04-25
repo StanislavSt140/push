@@ -44,6 +44,7 @@ fun MarketScreen(navController: NavController) {
 
     AppHeader(navController, "Креативний Маркет") {
         Scaffold(
+            containerColor = Color.White,
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = { navController.navigate(Screen.CreateProduct.route) },
