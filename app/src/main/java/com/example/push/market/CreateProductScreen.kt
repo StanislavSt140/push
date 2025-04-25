@@ -12,7 +12,6 @@ import androidx.navigation.NavHostController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-
 class CreateProductScreen(
     private val navController: NavHostController,
     private val marketApiService: MarketApiService,
@@ -29,6 +28,7 @@ class CreateProductScreen(
         var selectedCategoryId by remember { mutableStateOf<Int?>(null) }
         var categories by remember { mutableStateOf<List<CategoryItem>>(emptyList()) }
         var isLoading by remember { mutableStateOf(false) }
+        var isMenuExpanded by remember { mutableStateOf(false) }
         var errorMessage by remember { mutableStateOf("") }
 
         LaunchedEffect(Unit) {
@@ -93,14 +93,27 @@ class CreateProductScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(16.dp))
-            DropdownMenu(
-                expanded = categories.isNotEmpty(),
-                onDismissRequest = { /* No dismiss action */ },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                categories.forEach { category ->
-                    DropdownMenuItem(onClick = { selectedCategoryId = category.id }) {
-                        Text(text = category.name)
+            Box {
+                // Dropdown Menu for Categories
+                TextField(
+                    value = categories.firstOrNull { it.id == selectedCategoryId }?.name ?: "Select Category",
+                    onValueChange = {},
+                    modifier = Modifier.fillMaxWidth(),
+                    readOnly = true,
+                    label = { Text("Category") }
+                )
+                DropdownMenu(
+                    expanded = isMenuExpanded,
+                    onDismissRequest = { isMenuExpanded = false },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    categories.forEach { category ->
+                        DropdownMenuItem(onClick = {
+                            selectedCategoryId = category.id
+                            isMenuExpanded = false // Close the menu after selection
+                        }) {
+                            Text(text = category.name)
+                        }
                     }
                 }
             }

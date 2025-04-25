@@ -35,38 +35,34 @@ fun MarketScreen(navController: NavController) {
                 if (response.status == "success") {
                     categories.value = response.data!!
                 }
-                Log.d("CategoryDetailScreen", "${response.status}: ${response.data} ")
+                Log.d("MarketScreen", "Categories loaded successfully")
             } catch (e: Exception) {
-                Log.d("MarketScreen", "Помилка завантаження категорій: ${e.message}")
+                Log.d("MarketScreen", "Failed to load categories: ${e.message}")
             }
         }
     }
 
-    AppHeader(navController, "Креативний Маркет") {
-        Column(modifier = Modifier.fillMaxSize()) {
-            // Floating Action Button for navigating to CreateProductScreen
+    Scaffold(
+        floatingActionButton = {
             FloatingActionButton(
                 onClick = { navController.navigate(Screen.CreateProduct.route) },
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .padding(16.dp),
                 containerColor = MaterialTheme.colorScheme.primary
             ) {
                 Icon(Icons.Filled.Add, contentDescription = "Add Product")
             }
-
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(horizontal = 0.dp, vertical = 88.dp), // ⬅ Зменшуємо бокові відступи!
-                horizontalArrangement = Arrangement.spacedBy(8.dp), // ⬅ Мінімальний простір між картками!
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(categories.value.size) { index ->
-                    val category = categories.value[index]
-                    CategoryItemView(category) {
-                        navController.navigate(Screen.CategoryDetail.createRoute(category.id))
-                    }
+        }
+    ) { paddingValues ->
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            contentPadding = PaddingValues(16.dp)
+        ) {
+            items(categories.value.size) { index ->
+                val category = categories.value[index]
+                CategoryItemView(category) {
+                    navController.navigate(Screen.CategoryDetail.createRoute(category.id))
                 }
             }
         }
@@ -75,11 +71,10 @@ fun MarketScreen(navController: NavController) {
 
 @Composable
 fun CategoryItemView(category: CategoryItem, onClick: () -> Unit) {
-
     Card(
         modifier = Modifier
-            .fillMaxWidth(0.95f) // ⬅ Картка займає майже всю доступну ширину!
-            .padding(0.dp) // ⬅ Мінімальні відступи між картками!
+            .fillMaxWidth(0.95f)
+            .padding(0.dp)
             .clickable { onClick() },
         elevation = CardDefaults.elevatedCardElevation(10.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White)
@@ -96,13 +91,15 @@ fun CategoryItemView(category: CategoryItem, onClick: () -> Unit) {
             Spacer(modifier = Modifier.height(1.dp))
 
             Box(
-                modifier = Modifier.fillMaxWidth().height(44.dp), // ⬅ Забезпечує повну ширину та фіксовану висоту
-                contentAlignment = Alignment.Center // ⬅ Центрує текст і горизонтально, і вертикально
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(44.dp),
+                contentAlignment = Alignment.Center
             ) {
                 Text(
                     category.name,
                     style = MaterialTheme.typography.titleMedium,
-                    textAlign = TextAlign.Center, // ⬅ Текст рівняється по центру
+                    textAlign = TextAlign.Center,
                     maxLines = 2
                 )
             }
@@ -112,8 +109,7 @@ fun CategoryItemView(category: CategoryItem, onClick: () -> Unit) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
-            ) {
-            }
+            ) {}
         }
     }
 }
