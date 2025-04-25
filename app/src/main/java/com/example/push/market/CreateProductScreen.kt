@@ -48,15 +48,7 @@ class CreateProductScreen(
         var isMenuExpanded by remember { mutableStateOf(false) }
         var errorMessage by remember { mutableStateOf("") }
 
-        val titlePart = productName.toRequestBody("text/plain".toMediaTypeOrNull())
-        val descriptionPart = productDescription.toRequestBody("text/plain".toMediaTypeOrNull())
-        val pricePart = productPrice.toRequestBody("text/plain".toMediaTypeOrNull())
-        val discountPart = productDiscountPrice.takeIf { it.isNotEmpty() }?.toRequestBody("text/plain".toMediaTypeOrNull())
-        val categoryIdPart = selectedCategoryId.toString().toRequestBody("text/plain".toMediaTypeOrNull())
 
-        val imageFile = File(productImageUri!!.path!!) // ⬅ Отримуємо файл із URI
-        val requestBody = imageFile.asRequestBody("image/*".toMediaTypeOrNull())
-        val imagePart = MultipartBody.Part.createFormData("image", imageFile.name, requestBody)
 
         // Лаунчер для вибору зображення
         val imagePickerLauncher = rememberLauncherForActivityResult(
@@ -241,7 +233,7 @@ class CreateProductScreen(
                                         productImageUri = null
                                         selectedCategoryId = null
                                     } else {
-                                     
+
                                     }
                                 } catch (e: Exception) {
                                     errorMessage = "Помилка: ${e.message}"
