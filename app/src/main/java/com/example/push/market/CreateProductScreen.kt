@@ -212,7 +212,12 @@ class CreateProductScreen(
                                         return@launch
                                     }
 
-                                    val imageFile = File(imagePath) // ⬅ Безпечне отримання файлу
+                                    val imageFile = productImageUri?.path?.let { File(it) }
+                                    if (imageFile == null || !imageFile.exists()) {
+                                        errorMessage = "Помилка: Зображення не вибрано або файл недоступний!"
+                                        isLoading = false
+                                        return@launch
+                                    }
                                     val requestBody = imageFile.asRequestBody("image/*".toMediaTypeOrNull())
                                     val imagePart = MultipartBody.Part.createFormData("image", imageFile.name, requestBody)
 
