@@ -11,6 +11,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -48,6 +49,7 @@ class CreateProductScreen(
             productImageUri = uri
         }
 
+        // Логіка завантаження категорій
         LaunchedEffect(Unit) {
             coroutineScope.launch {
                 try {
@@ -73,32 +75,36 @@ class CreateProductScreen(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.Center
             ) {
+                // Поля вводу для даних продукту
                 TextField(
                     value = productName,
                     onValueChange = { productName = it },
-                    label = { Text("Product Name") },
+                    label = { Text("Назва продукту") },
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(8.dp))
+
                 TextField(
                     value = productDescription,
                     onValueChange = { productDescription = it },
-                    label = { Text("Product Description") },
+                    label = { Text("Опис продукту") },
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(8.dp))
+
                 TextField(
                     value = productPrice,
                     onValueChange = { productPrice = it },
-                    label = { Text("Price") },
+                    label = { Text("Ціна") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(8.dp))
+
                 TextField(
                     value = productDiscountPrice,
                     onValueChange = { productDiscountPrice = it },
-                    label = { Text("Discount Price (Optional)") },
+                    label = { Text("Знижка (опційно)") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -108,14 +114,17 @@ class CreateProductScreen(
                 productImageUri?.let { uri ->
                     Image(
                         painter = rememberAsyncImagePainter(uri),
-                        contentDescription = "Selected Image",
+                        contentDescription = "Вибране зображення",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(200.dp)
                             .padding(vertical = 8.dp)
                     )
-                }
+                } ?: Text(
+                    text = "Зображення не вибрано",
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
 
                 // Кнопка для вибору зображення
                 Button(
@@ -123,25 +132,26 @@ class CreateProductScreen(
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = Color(0xFF03736A), // Колір фону
-                        contentColor = Color.White    // Колір тексту
+                        contentColor = Color.White          // Колір тексту
                     )
                 ) {
                     Text(text = "Вибрати Зображення")
                 }
-
                 Spacer(modifier = Modifier.height(16.dp))
+
+                // Вибір категорії продукту
                 Box {
                     OutlinedTextField(
-                        value = categories.firstOrNull { it.id == selectedCategoryId }?.name ?: "Select Category",
+                        value = categories.firstOrNull { it.id == selectedCategoryId }?.name ?: "Оберіть категорію",
                         onValueChange = {},
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable { isMenuExpanded = !isMenuExpanded }, // Додаємо клікабельність до всього поля
                         readOnly = true,
-                        label = { Text("Category") },
+                        label = { Text("Категорія") },
                         trailingIcon = {
                             IconButton(onClick = { isMenuExpanded = !isMenuExpanded }) {
-                                Icon(Icons.Default.ArrowDropDown, contentDescription = "Expand Menu")
+                                Icon(Icons.Default.ArrowDropDown, contentDescription = "Розгорнути меню")
                             }
                         }
                     )
@@ -150,28 +160,57 @@ class CreateProductScreen(
                         onDismissRequest = { isMenuExpanded = false },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        categories.forEach { category ->
-                            DropdownMenuItem(onClick = {
-                                selectedCategoryId = category.id
-                                isMenuExpanded = false
-                            }) {
-                                Text(text = category.name)
+                        if (categories.isEmpty()) {
+                            DropdownMenuItem(onClick = {}) {
+                                Text("Немає доступних категорій")
+                            }
+                        } else {
+                            categories.forEach { category ->
+                                DropdownMenuItem(onClick = {
+                                    selectedCategoryId = category.id
+                                    isMenuExpanded = false
+                                }) {
+                                    Text(text = category.name)
+                                }
                             }
                         }
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
+
+                // Кнопка додавання продукту
                 Button(
                     onClick = {
                         coroutineScope.launch {
-                            if (productName.isNotEmpty() && selectedCategoryId != null) {
+                            if (productName.isEmpty() || productPrice.isEmpty() || selectedCategoryId == null) {
+                                errorMessage = "Будь ласка, заповніть всі обов'язкові поля"
+                            } else {
                                 // Додайте логіку для завантаження продукту з зображенням
+                                errorMessage = "Продукт додано успішно!" // Тимчасове повідомлення
                             }
                         }
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Додати")
+                }
+
+                // Відображення повідомлення про помилку
+                if (errorMessage.isNotEmpty()) {
+                    Text(
+                        text = errorMessage,
+                        color = Color.Red,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
+
+                // Індикатор завантаження
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(top = 16.dp)
+                    )
                 }
             }
         }
