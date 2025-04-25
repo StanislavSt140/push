@@ -198,48 +198,42 @@ class CreateProductScreen(
                 Button(
                     onClick = {
                         coroutineScope.launch {
-                            if (productName.isEmpty() || productPrice.isEmpty() || selectedCategoryId == null || productImageUri == null) {
+                            if (productName.isEmpty() || productPrice.isEmpty() || selectedCategoryId == null) {
                                 errorMessage = "Будь ласка, заповніть всі обов'язкові поля"
                             } else {
                                 try {
                                     isLoading = true
 
-                                    // 🔹 Перевіряємо `productImageUri`, щоб уникнути `NullPointerException`
-                                    val imagePath = productImageUri?.path.orEmpty()
-                                    if (imagePath.isEmpty()) {
-                                        errorMessage = "Помилка: Зображення не вибрано!"
-                                        isLoading = false
-                                        return@launch
-                                    }
-
+                                    // Перевірка зображення
                                     val imageFile = productImageUri?.path?.let { File(it) }
                                     if (imageFile == null || !imageFile.exists()) {
                                         errorMessage = "Помилка: Зображення не вибрано або файл недоступний!"
                                         isLoading = false
                                         return@launch
                                     }
+
+                                    // Підготовка даних для запиту
                                     val requestBody = imageFile.asRequestBody("image/*".toMediaTypeOrNull())
                                     val imagePart = MultipartBody.Part.createFormData("image", imageFile.name, requestBody)
 
-                                    // 🔹 Перетворюємо текстові дані у `RequestBody`
                                     val titlePart = productName.toRequestBody("text/plain".toMediaTypeOrNull())
                                     val descriptionPart = productDescription.toRequestBody("text/plain".toMediaTypeOrNull())
                                     val pricePart = productPrice.toRequestBody("text/plain".toMediaTypeOrNull())
                                     val discountPart = productDiscountPrice.takeIf { it.isNotEmpty() }?.toRequestBody("text/plain".toMediaTypeOrNull())
                                     val categoryIdPart = selectedCategoryId?.toString()?.toRequestBody("text/plain".toMediaTypeOrNull())
 
-                                    // 🔹 Відправка на сервер
+                                    // Відправка на сервер
                                     val response = marketApiService.createProduct(
                                         title = titlePart,
                                         description = descriptionPart,
                                         price = pricePart,
                                         discountPrice = discountPart,
-                                        categoryId = categoryIdPart!!, // ⬅ Переконайся, що `categoryIdPart` не `null`
+                                        categoryId = categoryIdPart!!,
                                         image = imagePart
                                     )
 
                                     if (response.status == "success") {
-                                        errorMessage = "Продукт додано успішно!"
+                                        errorMessage = ""
                                         productName = ""
                                         productDescription = ""
                                         productPrice = ""
@@ -247,7 +241,7 @@ class CreateProductScreen(
                                         productImageUri = null
                                         selectedCategoryId = null
                                     } else {
-                                   //     errorMessage = "Помилка: ${response.message}"
+                                     
                                     }
                                 } catch (e: Exception) {
                                     errorMessage = "Помилка: ${e.message}"
