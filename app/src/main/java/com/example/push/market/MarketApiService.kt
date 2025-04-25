@@ -2,6 +2,8 @@ package com.example.push.market
 
 
 
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -14,15 +16,15 @@ interface MarketApiService {
     @GET("push/market/getProductDetail.php") // ⬅ Отримання деталей товару
     suspend fun getProductDetail(@Query("productId") productId: Int): ApiResponse<ProductItem>
 
-    @POST("push/market/createProduct.php") // ⬅ Додавання нового товару
-    @FormUrlEncoded
+    @Multipart
+    @POST("push/market/createProduct.php")
     suspend fun createProduct(
-        @Field("title") title: String,
-        @Field("description") description: String,
-        @Field("price") price: Double,
-        @Field("discountPrice") discountPrice: Double?, // ⬅ Додаємо можливість знижки
-        @Field("imageUrl") imageUrl: String,
-        @Field("categoryId") categoryId: Int // ⬅ Прив’язуємо товар до категорії
+        @Part("title") title: RequestBody,
+        @Part("description") description: RequestBody,
+        @Part("price") price: RequestBody,
+        @Part("discountPrice") discountPrice: RequestBody?,
+        @Part("categoryId") categoryId: RequestBody,
+        @Part image: MultipartBody.Part // ⬅ Оновлення типу `image`
     ): ApiResponse<String>
 
     @GET("push/market/getCategories.php") // ⬅ Отримання списку категорій

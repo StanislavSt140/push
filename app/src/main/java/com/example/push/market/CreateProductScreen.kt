@@ -22,6 +22,12 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.push.ui.components.AppHeader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
+
 
 class CreateProductScreen(
     private val navController: NavHostController,
@@ -41,6 +47,16 @@ class CreateProductScreen(
         var isLoading by remember { mutableStateOf(false) }
         var isMenuExpanded by remember { mutableStateOf(false) }
         var errorMessage by remember { mutableStateOf("") }
+
+        val titlePart = productName.toRequestBody("text/plain".toMediaTypeOrNull())
+        val descriptionPart = productDescription.toRequestBody("text/plain".toMediaTypeOrNull())
+        val pricePart = productPrice.toRequestBody("text/plain".toMediaTypeOrNull())
+        val discountPart = productDiscountPrice.takeIf { it.isNotEmpty() }?.toRequestBody("text/plain".toMediaTypeOrNull())
+        val categoryIdPart = selectedCategoryId.toString().toRequestBody("text/plain".toMediaTypeOrNull())
+
+        val imageFile = File(productImageUri!!.path!!) // ⬅ Отримуємо файл із URI
+        val requestBody = imageFile.asRequestBody("image/*".toMediaTypeOrNull())
+        val imagePart = MultipartBody.Part.createFormData("image", imageFile.name, requestBody)
 
         // Лаунчер для вибору зображення
         val imagePickerLauncher = rememberLauncherForActivityResult(
@@ -188,17 +204,33 @@ class CreateProductScreen(
                                 try {
                                     isLoading = true
 
-                                    val imageFile = File(productImageUri!!.path!!) // ⬅ Отримуємо файл із URI
+                                    // 🔹 Перевіряємо `productImageUri`, щоб уникнути `NullPointerException`
+                                    val imagePath = productImageUri?.path.orEmpty()
+                                    if (imagePath.isEmpty()) {
+                                        errorMessage = "Помилка: Зображення не вибрано!"
+                                        isLoading = false
+                                        return@launch
+                                    }
+
+                                    val imageFile = File(imagePath) // ⬅ Безпечне отримання файлу
                                     val requestBody = imageFile.asRequestBody("image/*".toMediaTypeOrNull())
                                     val imagePart = MultipartBody.Part.createFormData("image", imageFile.name, requestBody)
 
+                                    // 🔹 Перетворюємо текстові дані у `RequestBody`
+                                    val titlePart = productName.toRequestBody("text/plain".toMediaTypeOrNull())
+                                    val descriptionPart = productDescription.toRequestBody("text/plain".toMediaTypeOrNull())
+                                    val pricePart = productPrice.toRequestBody("text/plain".toMediaTypeOrNull())
+                                    val discountPart = productDiscountPrice.takeIf { it.isNotEmpty() }?.toRequestBody("text/plain".toMediaTypeOrNull())
+                                    val categoryIdPart = selectedCategoryId?.toString()?.toRequestBody("text/plain".toMediaTypeOrNull())
+
+                                    // 🔹 Відправка на сервер
                                     val response = marketApiService.createProduct(
-                                        title = productName,
-                                        description = productDescription,
-                                        price = productPrice.toDouble(),
-                                        discountPrice = productDiscountPrice.takeIf { it.isNotEmpty() }?.toDouble(),
-                                        imageUrl = imagePart, // ⬅ Відправляємо зображення
-                                        categoryId = selectedCategoryId!!
+                                        title = titlePart,
+                                        description = descriptionPart,
+                                        price = pricePart,
+                                        discountPrice = discountPart,
+                                        categoryId = categoryIdPart!!, // ⬅ Переконайся, що `categoryIdPart` не `null`
+                                        image = imagePart
                                     )
 
                                     if (response.status == "success") {
@@ -210,7 +242,7 @@ class CreateProductScreen(
                                         productImageUri = null
                                         selectedCategoryId = null
                                     } else {
-                                        errorMessage = "Помилка: ${response.message}"
+                                   //     errorMessage = "Помилка: ${response.message}"
                                     }
                                 } catch (e: Exception) {
                                     errorMessage = "Помилка: ${e.message}"
