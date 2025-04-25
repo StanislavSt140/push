@@ -42,27 +42,29 @@ fun MarketScreen(navController: NavController) {
         }
     }
 
-    Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { navController.navigate(Screen.CreateProduct.route) },
-                containerColor = MaterialTheme.colorScheme.primary
-            ) {
-                Icon(Icons.Filled.Add, contentDescription = "Add Product")
+    AppHeader(navController, "Креативний Маркет") {
+        Scaffold(
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = { navController.navigate(Screen.CreateProduct.route) },
+                    containerColor = MaterialTheme.colorScheme.primary
+                ) {
+                    Icon(Icons.Filled.Add, contentDescription = "Add Product")
+                }
             }
-        }
-    ) { paddingValues ->
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            contentPadding = PaddingValues(16.dp)
-        ) {
-            items(categories.value.size) { index ->
-                val category = categories.value[index]
-                CategoryItemView(category) {
-                    navController.navigate(Screen.CategoryDetail.createRoute(category.id))
+        ) { paddingValues ->
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(horizontal = 0.dp, vertical = 88.dp), // ⬅ Зменшуємо бокові відступи!
+                horizontalArrangement = Arrangement.spacedBy(8.dp), // ⬅ Мінімальний простір між картками!
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(categories.value.size) { index ->
+                    val category = categories.value[index]
+                    CategoryItemView(category) {
+                        navController.navigate(Screen.CategoryDetail.createRoute(category.id))
+                    }
                 }
             }
         }

@@ -3,12 +3,14 @@ package com.example.push.market
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.push.ui.components.AppHeader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -32,7 +34,6 @@ class CreateProductScreen(
         var errorMessage by remember { mutableStateOf("") }
 
         LaunchedEffect(Unit) {
-            // Fetch categories on screen load
             coroutineScope.launch {
                 try {
                     isLoading = true
@@ -50,123 +51,84 @@ class CreateProductScreen(
             }
         }
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center
-        ) {
-            TextField(
-                value = productName,
-                onValueChange = { productName = it },
-                label = { Text("Product Name") },
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            TextField(
-                value = productDescription,
-                onValueChange = { productDescription = it },
-                label = { Text("Product Description") },
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            TextField(
-                value = productPrice,
-                onValueChange = { productPrice = it },
-                label = { Text("Price") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            TextField(
-                value = productDiscountPrice,
-                onValueChange = { productDiscountPrice = it },
-                label = { Text("Discount Price (Optional)") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            TextField(
-                value = productImageUrl,
-                onValueChange = { productImageUrl = it },
-                label = { Text("Image URL") },
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Box {
-                // Dropdown Menu for Categories
+        AppHeader(navController, "Додати Товар") {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center
+            ) {
                 TextField(
-                    value = categories.firstOrNull { it.id == selectedCategoryId }?.name ?: "Select Category",
-                    onValueChange = {},
-                    modifier = Modifier.fillMaxWidth(),
-                    readOnly = true,
-                    label = { Text("Category") }
-                )
-                DropdownMenu(
-                    expanded = isMenuExpanded,
-                    onDismissRequest = { isMenuExpanded = false },
+                    value = productName,
+                    onValueChange = { productName = it },
+                    label = { Text("Product Name") },
                     modifier = Modifier.fillMaxWidth()
-                ) {
-                    categories.forEach { category ->
-                        DropdownMenuItem(onClick = {
-                            selectedCategoryId = category.id
-                            isMenuExpanded = false // Close the menu after selection
-                        }) {
-                            Text(text = category.name)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                TextField(
+                    value = productDescription,
+                    onValueChange = { productDescription = it },
+                    label = { Text("Product Description") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                TextField(
+                    value = productPrice,
+                    onValueChange = { productPrice = it },
+                    label = { Text("Price") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                TextField(
+                    value = productDiscountPrice,
+                    onValueChange = { productDiscountPrice = it },
+                    label = { Text("Discount Price (Optional)") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Box {
+                    OutlinedTextField(
+                        value = categories.firstOrNull { it.id == selectedCategoryId }?.name ?: "Select Category",
+                        onValueChange = {},
+                        modifier = Modifier.fillMaxWidth(),
+                        readOnly = true,
+                        label = { Text("Category") },
+                        trailingIcon = {
+                            IconButton(onClick = { isMenuExpanded = !isMenuExpanded }) {
+                                Icon(Icons.Default.ArrowDropDown, contentDescription = "Expand Menu")
+                            }
+                        }
+                    )
+                    DropdownMenu(
+                        expanded = isMenuExpanded,
+                        onDismissRequest = { isMenuExpanded = false },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        categories.forEach { category ->
+                            DropdownMenuItem(onClick = {
+                                selectedCategoryId = category.id
+                                isMenuExpanded = false
+                            }) {
+                                Text(text = category.name)
+                            }
                         }
                     }
                 }
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            if (isLoading) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-            } else {
+                Spacer(modifier = Modifier.height(16.dp))
                 Button(
                     onClick = {
                         coroutineScope.launch {
-                            try {
-                                isLoading = true
-                                errorMessage = ""
-                                val price = productPrice.toDoubleOrNull()
-                                val discountPrice = productDiscountPrice.toDoubleOrNull()
-                                if (price == null || productName.isBlank() || selectedCategoryId == null) {
-                                    errorMessage = "Please fill all required fields"
-                                    isLoading = false
-                                    return@launch
-                                }
-
-                                // Call the createProduct method in MarketApiService
-                                val response = marketApiService.createProduct(
-                                    title = productName,
-                                    description = productDescription,
-                                    price = price,
-                                    discountPrice = discountPrice,
-                                    imageUrl = productImageUrl,
-                                    categoryId = selectedCategoryId!!
-                                )
-                                if (response.status == "success") {
-                                    navController.popBackStack() // Navigate back on success
-                                } else {
-                                    errorMessage = "Failed to create product: ${response.data}"
-                                }
-                            } catch (e: Exception) {
-                                errorMessage = "An error occurred: ${e.message}"
-                            } finally {
-                                isLoading = false
+                            if (productName.isNotEmpty() && selectedCategoryId != null) {
+                                // Call API to create product
                             }
                         }
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Add Product")
+                    Text("Додати")
                 }
-            }
-            if (errorMessage.isNotEmpty()) {
-                Text(
-                    text = errorMessage,
-                    color = MaterialTheme.colors.error,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
             }
         }
     }

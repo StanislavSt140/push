@@ -9,6 +9,7 @@ import com.example.push.market.CreateProductScreen
 import com.example.push.market.MarketScreen
 import com.example.push.market.ProductDetailScreen
 import com.example.push.market.RetrofitClient
+import com.example.push.navigation.Screen.Market
 import com.example.push.ui.screens.*
 
 sealed class Screen(val route: String) {
@@ -54,7 +55,7 @@ sealed class Screen(val route: String) {
 
 @Composable
 fun PushNavHost(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = Screen.Login.route) {
+    NavHost(navController = navController, startDestination = Screen.Market.route) {
         composable(Screen.Login.route) { LoginScreen(navController) }
         composable(Screen.Home.route) { MainScreen(navController) }
         composable(Screen.Menu.route) { MainMenu(navController) }
