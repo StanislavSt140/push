@@ -1,14 +1,12 @@
 package com.example.push.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import com.example.push.market.CategoryDetailScreen
 import com.example.push.market.CreateProductScreen
 import com.example.push.market.MarketScreen
 import com.example.push.market.ProductDetailScreen
-import com.example.push.market.RetrofitClient
 import com.example.push.ui.screens.*
 
 sealed class Screen(val route: String) {
@@ -110,13 +108,11 @@ fun PushNavHost(navController: NavHostController) {
             }
         }
 
-        composable(Screen.CreateProduct.route) {
-            CreateProductScreen(
-                navController = navController,
-                marketApiService = RetrofitClient.marketApi,
-                coroutineScope = rememberCoroutineScope()
-            ).RenderScreen()
-        }
+        composable(Screen.CreateProduct.route) { CreateProductScreen(
+            navController,
+            marketApiService = TODO(),
+            coroutineScope = TODO()
+        ) }
         composable(Screen.ProductDetail.route) { backStackEntry ->
             val productId = backStackEntry.arguments?.getString("productId")?.toIntOrNull()
             if (productId != null) {

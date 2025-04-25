@@ -8,7 +8,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -43,23 +43,33 @@ fun MarketScreen(navController: NavController) {
     }
 
     AppHeader(navController, "Креативний Маркет") {
+        Column(modifier = Modifier.fillMaxSize()) {
+            // Floating Action Button for navigating to CreateProductScreen
+            FloatingActionButton(
+                onClick = { navController.navigate(Screen.CreateProduct.route) },
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .padding(16.dp),
+                containerColor = MaterialTheme.colorScheme.primary
+            ) {
+                Icon(Icons.Filled.Add, contentDescription = "Add Product")
+            }
 
-
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 0.dp, vertical = 88.dp), // ⬅ Зменшуємо бокові відступи!
-            horizontalArrangement = Arrangement.spacedBy(8.dp), // ⬅ Мінімальний простір між картками!
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(categories.value.size) { index ->
-                val category = categories.value[index]
-                CategoryItemView(category) {
-                    navController.navigate(Screen.CategoryDetail.createRoute(category.id))
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(horizontal = 0.dp, vertical = 88.dp), // ⬅ Зменшуємо бокові відступи!
+                horizontalArrangement = Arrangement.spacedBy(8.dp), // ⬅ Мінімальний простір між картками!
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(categories.value.size) { index ->
+                    val category = categories.value[index]
+                    CategoryItemView(category) {
+                        navController.navigate(Screen.CategoryDetail.createRoute(category.id))
+                    }
                 }
             }
         }
-
     }
 }
 
@@ -97,16 +107,12 @@ fun CategoryItemView(category: CategoryItem, onClick: () -> Unit) {
                 )
             }
 
-
             Spacer(modifier = Modifier.height(6.dp))
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-
-
-
             }
         }
     }
