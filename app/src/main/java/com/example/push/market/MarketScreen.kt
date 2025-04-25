@@ -56,8 +56,10 @@ fun MarketScreen(navController: NavController) {
         ) { paddingValues ->
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3),
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(horizontal = 0.dp, vertical = 88.dp), // ⬅ Зменшуємо бокові відступи!
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = 0.dp, end = 0.dp),
+                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 88.dp), // ⬅ Зменшуємо бокові відступи!
                 horizontalArrangement = Arrangement.spacedBy(8.dp), // ⬅ Мінімальний простір між картками!
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -76,13 +78,13 @@ fun MarketScreen(navController: NavController) {
 fun CategoryItemView(category: CategoryItem, onClick: () -> Unit) {
     Card(
         modifier = Modifier
-            .fillMaxWidth(0.95f)
+            .fillMaxWidth()
             .padding(0.dp)
             .clickable { onClick() },
         elevation = CardDefaults.elevatedCardElevation(10.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
-        Column(modifier = Modifier.padding(10.dp)) {
+        Column(modifier = Modifier.padding(0.dp)) {
             Image(
                 painter = rememberAsyncImagePainter(category.imageUrl),
                 contentDescription = null,

@@ -125,7 +125,7 @@ class CreateProductScreen(
                     contentColor = Color.White
                 ) {
                     Text(text = "Вибрати Зображення"),
-                    Spacer(modifier = Modifier.height(8.dp))
+
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
