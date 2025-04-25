@@ -3,13 +3,18 @@ package com.example.push.market
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -24,12 +29,6 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.compose.foundation.clickable
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.ui.focus.onFocusChanged
 
 @Composable
 fun CreateProductScreen(
@@ -50,29 +49,31 @@ fun CreateProductScreen(
 
     val context = LocalContext.current
 
-    // 🔹 Функція для конвертації URI → File
+    // Функція для конвертації URI → File
     fun getFileFromUri(context: Context, uri: Uri): File? {
         val file = File(context.cacheDir, "upload_image.jpg")
-        try {
+        return try {
             context.contentResolver.openInputStream(uri)?.use { inputStream ->
                 file.outputStream().use { outputStream ->
                     inputStream.copyTo(outputStream)
                 }
             }
-            return file
+            Log.d("CreateProductScreen", "Файл створено: ${file.absolutePath}")
+            file
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("CreateProductScreen", "Помилка створення файлу: ${e.message}")
+            null
         }
-        return null
     }
 
-    // 🔹 Лаунчер для вибору зображення
+    // Лаунчер для вибору зображення
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         productImageUri = uri
     }
 
+    // Завантаження категорій
     LaunchedEffect(Unit) {
         coroutineScope.launch {
             try {
@@ -92,33 +93,55 @@ fun CreateProductScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
         verticalArrangement = Arrangement.Center
     ) {
-
-        DropdownMenu(
-            expanded = isMenuExpanded,
-            onDismissRequest = { isMenuExpanded = false }
-        ) {
-            if (categories.isEmpty()) {
-                DropdownMenuItem(
-                    onClick = { },
-                    text = { Text("Немає доступних категорій") }
-                )
-            } else {
-                categories.forEach { category ->
-                    DropdownMenuItem(
-                        onClick = {
-                            selectedCategoryId = category.id
-                            isMenuExpanded = false
-                        },
-                        text = { Text(category.name) }
+        // Поле для вибору категорії
+        Box(modifier = Modifier.fillMaxWidth()) {
+            OutlinedTextField(
+                value = categories.firstOrNull { it.id == selectedCategoryId }?.name ?: "Оберіть категорію",
+                onValueChange = {},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { isMenuExpanded = true },
+                readOnly = true,
+                label = { Text("Категорія") },
+                trailingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.ArrowDropDown,
+                        contentDescription = "Розгорнути меню",
+                        modifier = Modifier.clickable { isMenuExpanded = true }
                     )
+                }
+            )
+
+            DropdownMenu(
+                expanded = isMenuExpanded,
+                onDismissRequest = { isMenuExpanded = false }
+            ) {
+                if (categories.isEmpty()) {
+                    DropdownMenuItem(
+                        onClick = {},
+                        text = { Text("Немає доступних категорій") }
+                    )
+                } else {
+                    categories.forEach { category ->
+                        DropdownMenuItem(
+                            onClick = {
+                                selectedCategoryId = category.id
+                                isMenuExpanded = false
+                            },
+                            text = { Text(category.name) }
+                        )
+                    }
                 }
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
-        // Поля вводу
+
+        // Поля для введення даних
         TextField(
             value = productName,
             onValueChange = { productName = it },
@@ -153,90 +176,80 @@ fun CreateProductScreen(
         )
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Вибране зображення
+        // Відображення вибраного зображення
         productImageUri?.let { uri ->
             Image(
                 painter = rememberAsyncImagePainter(uri),
                 contentDescription = "Вибране зображення",
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxWidth().height(200.dp).padding(vertical = 8.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .padding(vertical = 8.dp)
             )
-        } ?: Text("Зображення не вибрано", modifier = Modifier.align(Alignment.CenterHorizontally))
+        } ?: Text(
+            text = "Зображення не вибрано",
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
 
-        // Кнопка вибору зображення
+        // Кнопка для вибору зображення
         Button(
             onClick = { imagePickerLauncher.launch("image/*") },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF03736A), // Колір фону
-                contentColor = Color.White          // Колір тексту
+                containerColor = Color(0xFF03736A),
+                contentColor = Color.White
             )
         ) {
             Text(text = "Вибрати Зображення")
         }
         Spacer(modifier = Modifier.height(16.dp))
 
-
-
-
-
-
-        // Кнопка додавання продукту
+        // Кнопка для створення продукту
         Button(
             onClick = {
                 coroutineScope.launch {
-                    Log.d("CreateProductScreen", "productName: $productName, productPrice: $productPrice, selectedCategoryId: $selectedCategoryId, productImageUri: $productImageUri()")
-
                     if (productName.isEmpty() || productPrice.isEmpty() || selectedCategoryId == null || productImageUri == null) {
-                        errorMessage = "Будь ласка, заповніть всі обов'язкові поля"
-                    } else {
-                        try {
-                            isLoading = true
+                        errorMessage = "Будь ласка, заповніть всі обов'язкові поля та виберіть зображення."
+                        return@launch
+                    }
 
-                            // 🔹 Отримання `File` зі `Uri`
-                            val imageFile = getFileFromUri(context, productImageUri!!)
-                            if (imageFile == null) {
-                                errorMessage = "Помилка: Не вдалося отримати файл зображення!"
-                                isLoading = false
-                                return@launch
-                            }
-
-                            val requestBody = imageFile.asRequestBody("image/*".toMediaTypeOrNull())
-                            val imagePart = MultipartBody.Part.createFormData("image", imageFile.name, requestBody)
-
-                            // 🔹 Перетворення текстових даних у `RequestBody`
-                            val titlePart = productName.toRequestBody("text/plain".toMediaTypeOrNull())
-                            val descriptionPart = productDescription.toRequestBody("text/plain".toMediaTypeOrNull())
-                            val pricePart = productPrice.toRequestBody("text/plain".toMediaTypeOrNull())
-                            val discountPart = productDiscountPrice.takeIf { it.isNotEmpty() }?.toRequestBody("text/plain".toMediaTypeOrNull())
-                            val categoryIdPart = selectedCategoryId?.toString()?.toRequestBody("text/plain".toMediaTypeOrNull())
-
-                            // 🔹 Відправка даних на сервер
-                            val response = marketApiService.createProduct(
-                                title = titlePart,
-                                description = descriptionPart,
-                                price = pricePart,
-                                discountPrice = discountPart,
-                                categoryId = categoryIdPart!!,
-                                image = imagePart
-                            )
-
-                            if (response.status == "success") {
-                                errorMessage = "Продукт додано успішно!"
-                                productName = ""
-                                productDescription = ""
-                                productPrice = ""
-                                productDiscountPrice = ""
-                                productImageUri = null
-                                selectedCategoryId = null
-                            } else {
-                            //    errorMessage = "Помилка: ${response.message}"
-                            }
-                        } catch (e: Exception) {
-                            errorMessage = "Помилка: ${e.message}"
-                        } finally {
-                            isLoading = false
+                    try {
+                        isLoading = true
+                        val imageFile = getFileFromUri(context, productImageUri!!)
+                        if (imageFile == null) {
+                            errorMessage = "Помилка: Не вдалося створити файл із зображення."
+                            return@launch
                         }
+
+                        val requestBody = imageFile.asRequestBody("image/*".toMediaTypeOrNull())
+                        val imagePart = MultipartBody.Part.createFormData("image", imageFile.name, requestBody)
+
+                        val titlePart = productName.toRequestBody("text/plain".toMediaTypeOrNull())
+                        val descriptionPart = productDescription.toRequestBody("text/plain".toMediaTypeOrNull())
+                        val pricePart = productPrice.toRequestBody("text/plain".toMediaTypeOrNull())
+                        val discountPart = productDiscountPrice.takeIf { it.isNotEmpty() }?.toRequestBody("text/plain".toMediaTypeOrNull())
+                        val categoryIdPart = selectedCategoryId?.toString()?.toRequestBody("text/plain".toMediaTypeOrNull())
+
+                        val response = marketApiService.createProduct(
+                            title = titlePart,
+                            description = descriptionPart,
+                            price = pricePart,
+                            discountPrice = discountPart,
+                            categoryId = categoryIdPart!!,
+                            image = imagePart
+                        )
+
+                        if (response.status == "success") {
+                            errorMessage = "Продукт успішно додано!"
+                        } else {
+                            errorMessage = "Помилка: ${response.message ?: "Невідома помилка"}"
+                        }
+                    } catch (e: Exception) {
+                        errorMessage = "Помилка: ${e.message}"
+                        Log.e("CreateProductScreen", "Помилка під час завантаження зображення: ${e.message}")
+                    } finally {
+                        isLoading = false
                     }
                 }
             },
@@ -247,11 +260,19 @@ fun CreateProductScreen(
 
         // Відображення помилок
         if (errorMessage.isNotEmpty()) {
-            Text(text = errorMessage, color = Color.Red, modifier = Modifier.padding(top = 8.dp))
+            Text(
+                text = errorMessage,
+                color = Color.Red,
+                modifier = Modifier.padding(top = 8.dp)
+            )
         }
 
         if (isLoading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 16.dp))
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(top = 16.dp)
+            )
         }
     }
 }

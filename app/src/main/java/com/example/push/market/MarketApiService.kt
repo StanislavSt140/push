@@ -32,7 +32,8 @@ interface MarketApiService {
 }
 data class ApiResponse<T>(
     val status: String,
-    val data: T?
+    val data: T?,
+    val message: String? // Поле для повідомлень про успіх або помилку
 )
 data class CategoryItem(
     val id: Int,    // Унікальний ID категорії
