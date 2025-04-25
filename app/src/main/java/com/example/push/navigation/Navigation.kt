@@ -108,7 +108,11 @@ fun PushNavHost(navController: NavHostController) {
             }
         }
 
-        composable(Screen.CreateProduct.route) { CreateProductScreen(navController) }
+        composable(Screen.CreateProduct.route) { CreateProductScreen(
+            navController,
+            marketApiService = TODO(),
+            coroutineScope = TODO()
+        ) }
         composable(Screen.ProductDetail.route) { backStackEntry ->
             val productId = backStackEntry.arguments?.getString("productId")?.toIntOrNull()
             if (productId != null) {
