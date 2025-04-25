@@ -47,6 +47,9 @@ interface ApiService {
     @GET("push/shop.php")
     suspend fun getProducts(): ProductResponse
 
+    @GET("push/ddProduct.php")
+    suspend fun addProduct(): ProductResponse
+
     @GET("push/getComplaints.php") // ⬅ Отримуємо список скарг
     suspend fun getComplaints(): ApiResponse<List<ComplaintItem>>
 
