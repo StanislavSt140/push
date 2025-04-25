@@ -98,6 +98,8 @@ fun WishlistCategoryScreen(categoryId: Int, navController: NavController) {
                                             wishlist.value = wishlist.value + WishlistItem(wishlist.value.size + 1, newWish, "Щойно")
                                             newWish = ""
                                             isDialogOpen = false
+
+
                                         }
                                     } catch (e: Exception) {
                                         Log.d("WishlistCategoryScreen", "Помилка додавання: ${e.message}")

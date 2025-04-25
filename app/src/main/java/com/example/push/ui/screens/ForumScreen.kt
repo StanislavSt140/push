@@ -25,6 +25,8 @@ fun ForumScreen(navController: NavController) {
     val scope = rememberCoroutineScope()
     var isDialogOpen by remember { mutableStateOf(false) } // ⬅ Контролюємо попап
     var categoryName by remember { mutableStateOf("") }
+    var categoryDescription by remember { mutableStateOf("") } // ⬅ Нове поле для опису
+    var categoryAuthor by remember { mutableStateOf("") } // ⬅ Нове поле для автора
 
     LaunchedEffect(Unit) {
         scope.launch {
@@ -41,7 +43,7 @@ fun ForumScreen(navController: NavController) {
 
     AppHeader(navController, "Учнівський форум") {
         Scaffold(
-            floatingActionButton = { // ⬅ Додаємо кнопку створення теми
+            floatingActionButton = {
                 FloatingActionButton(
                     onClick = { isDialogOpen = true },
                     containerColor = Color(0xFF03736A),
@@ -59,7 +61,7 @@ fun ForumScreen(navController: NavController) {
                 }
             }
 
-            // 📌 **Попап для створення теми**
+            // 📌 **Попап для створення нової теми**
             if (isDialogOpen) {
                 AlertDialog(
                     onDismissRequest = { isDialogOpen = false },
@@ -72,6 +74,20 @@ fun ForumScreen(navController: NavController) {
                                 label = { Text("Назва теми") },
                                 modifier = Modifier.fillMaxWidth()
                             )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            TextField(
+                                value = categoryDescription,
+                                onValueChange = { categoryDescription = it },
+                                label = { Text("Опис теми") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            TextField(
+                                value = categoryAuthor,
+                                onValueChange = { categoryAuthor = it },
+                                label = { Text("Автор теми") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
                         }
                     },
                     confirmButton = {
@@ -79,13 +95,16 @@ fun ForumScreen(navController: NavController) {
                             onClick = {
                                 scope.launch {
                                     try {
-                                        val response = RetrofitClient.api.createForumCategory(categoryName)
+                                        val response = RetrofitClient.api.createForumCategory(
+                                            categoryName, categoryDescription, categoryAuthor // ⬅ Передаємо всі поля
+                                        )
                                         if (response.status == "success") {
                                             categories.value = categories.value + ForumCategory(
-                                                categories.value.size + 1, categoryName, "Ти",
-                                                description = "Нова тема"
+                                                categories.value.size + 1, categoryName, categoryAuthor, description = categoryDescription
                                             )
                                             categoryName = ""
+                                            categoryDescription = ""
+                                            categoryAuthor = ""
                                             isDialogOpen = false
                                         }
                                     } catch (e: Exception) {
@@ -147,7 +166,7 @@ fun CreateForumCategory(navController: NavController) {
             onClick = {
                 scope.launch {
                     try {
-                        val response = RetrofitClient.api.createForumCategory(categoryName)
+                        val response = RetrofitClient.api.createForumCategory(categoryName, "Опис категорії", "Автор категорії")
                         if (response.status == "success") {
                             navController.popBackStack()
                         }

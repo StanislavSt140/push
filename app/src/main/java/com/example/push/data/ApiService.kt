@@ -18,13 +18,18 @@ interface ApiService {
 
     @POST("push/createForumCategory.php") // ⬅ Створюємо нову категорію
     @FormUrlEncoded
-    suspend fun createForumCategory(@Field("title") title: String): ResponseStatus
+    suspend fun createForumCategory(
+        @Field("title") title: String,
+        @Field("description") description: String,
+        @Field("author") author: String
+    ): ResponseStatus
 
     @POST("push/sendForumReply.php") // ⬅ Додаємо новий пост у категорію
     @FormUrlEncoded
     suspend fun sendForumReply(
         @Field("categoryId") categoryId: Int,
-        @Field("message") message: String
+        @Field("message") message: String,
+        @Field("author") author: String
     ): ResponseStatus
 
     @GET("push/index.php")
@@ -129,6 +134,7 @@ data class ComplaintItem(
     val id: Int,
     val author: String,
     val content: String,
+    val description: String,
     val timestamp: String
 )
 data class RewardItem(

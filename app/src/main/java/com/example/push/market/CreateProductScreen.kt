@@ -182,11 +182,41 @@ class CreateProductScreen(
                 Button(
                     onClick = {
                         coroutineScope.launch {
-                            if (productName.isEmpty() || productPrice.isEmpty() || selectedCategoryId == null) {
+                            if (productName.isEmpty() || productPrice.isEmpty() || selectedCategoryId == null || productImageUri == null) {
                                 errorMessage = "Будь ласка, заповніть всі обов'язкові поля"
                             } else {
-                                // Додайте логіку для завантаження продукту з зображенням
-                                errorMessage = "Продукт додано успішно!" // Тимчасове повідомлення
+                                try {
+                                    isLoading = true
+
+                                    val imageFile = File(productImageUri!!.path!!) // ⬅ Отримуємо файл із URI
+                                    val requestBody = imageFile.asRequestBody("image/*".toMediaTypeOrNull())
+                                    val imagePart = MultipartBody.Part.createFormData("image", imageFile.name, requestBody)
+
+                                    val response = marketApiService.createProduct(
+                                        title = productName,
+                                        description = productDescription,
+                                        price = productPrice.toDouble(),
+                                        discountPrice = productDiscountPrice.takeIf { it.isNotEmpty() }?.toDouble(),
+                                        imageUrl = imagePart, // ⬅ Відправляємо зображення
+                                        categoryId = selectedCategoryId!!
+                                    )
+
+                                    if (response.status == "success") {
+                                        errorMessage = "Продукт додано успішно!"
+                                        productName = ""
+                                        productDescription = ""
+                                        productPrice = ""
+                                        productDiscountPrice = ""
+                                        productImageUri = null
+                                        selectedCategoryId = null
+                                    } else {
+                                        errorMessage = "Помилка: ${response.message}"
+                                    }
+                                } catch (e: Exception) {
+                                    errorMessage = "Помилка: ${e.message}"
+                                } finally {
+                                    isLoading = false
+                                }
                             }
                         }
                     },

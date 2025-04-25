@@ -35,7 +35,7 @@ fun ComplaintsDetailScreen(complaintId: Int, navController: NavController) {
         Column(modifier = Modifier.fillMaxSize().padding(top = 86.dp)) {
             complaint.value?.let {
                 Text("Автор: ${it.author}", style = MaterialTheme.typography.titleMedium)
-                Text(it.content, style = MaterialTheme.typography.bodyMedium)
+                Text(it.description, style = MaterialTheme.typography.bodyMedium)
                 Text("Дата: ${it.timestamp}", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(onClick = { navController.popBackStack() }) {

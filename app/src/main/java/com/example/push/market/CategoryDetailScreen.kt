@@ -53,6 +53,7 @@ fun CategoryDetailScreen(categoryId: Int, navController: NavController) {
                 val response = RetrofitClient.marketApi.getProducts(categoryId)
                 if (response.status == "success" && response.data != null) {
                     products.value = response.data!!
+                        //   Log.d("CategoryDetailScreen", response.data.toString())
                 } else {
                     Log.d("CategoryDetailScreen", "Помилка: порожній список товарів ${categoryId}")
                 }
@@ -94,6 +95,7 @@ fun CategoryDetailScreen(categoryId: Int, navController: NavController) {
 
 @Composable
 fun ProductItemView(product: ProductItem, onClick: () -> Unit) {
+    Log.d("CategoryDetailScreen", product.toString())
     Card(
         modifier = Modifier
             .fillMaxWidth(0.95f) // ⬅ Картка займає майже всю доступну ширину!

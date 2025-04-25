@@ -1,14 +1,20 @@
 package com.example.push.ui.screens
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -19,7 +25,10 @@ import com.example.push.navigation.Screen
 import com.example.push.navigation.Screen.ComplaintsDetail
 import com.example.push.ui.components.AppHeader
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ComplaintsScreen(navController: NavController) {
     val complaints = remember { mutableStateOf(emptyList<ComplaintItem>()) }
@@ -27,6 +36,8 @@ fun ComplaintsScreen(navController: NavController) {
     var isDialogOpen by remember { mutableStateOf(false) } // ⬅ Контролюємо відкриття попапа
     var userName by remember { mutableStateOf("") }
     var complaintText by remember { mutableStateOf("") }
+// 📌 Додаємо форматування дати
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
     LaunchedEffect(Unit) {
         scope.launch {
@@ -91,7 +102,14 @@ fun ComplaintsScreen(navController: NavController) {
                                     try {
                                         val response = RetrofitClient.api.sendComplaint(userName, complaintText)
                                         if (response.status == "success") {
-                                            complaints.value = complaints.value + ComplaintItem(complaints.value.size + 1, userName, complaintText, "Щойно")
+                                            complaints.value = complaints.value + ComplaintItem(
+                                                complaints.value.size + 1,
+                                                userName,
+                                                complaintText,
+                                                "Щойно",
+                                                timestamp = LocalDateTime.now().format(formatter)
+
+                                            )
                                             userName = ""
                                             complaintText = ""
                                             isDialogOpen = false
@@ -118,17 +136,44 @@ fun ComplaintsScreen(navController: NavController) {
 
 
 
+
+
 @Composable
 fun ComplaintItemView(complaint: ComplaintItem, onClick: () -> Unit) {
     Card(
-        modifier = Modifier.fillMaxWidth().padding(8.dp).clickable { onClick() }, // ⬅ Додаємо `clickable`
-        elevation = CardDefaults.elevatedCardElevation(4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        modifier = Modifier.fillMaxWidth().padding(8.dp).clickable { onClick() },
+        elevation = CardDefaults.elevatedCardElevation(4.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text("Автор: ${complaint.author}", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
-            Text(complaint.content, style = MaterialTheme.typography.bodyMedium)
-            Text("Дата: ${complaint.timestamp}", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+        Row(
+            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(complaint.content, style = MaterialTheme.typography.bodyMedium)
+                Text("Автор: ${complaint.author}", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                Text("Дата: ${complaint.timestamp}", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+            }
+
+            // 📌 **Статус скарги**
+            if (complaint.description.isNullOrEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .background(Color.Red, shape = RoundedCornerShape(4.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(Icons.Filled.Warning, contentDescription = "Не розглянуто", tint = Color.White)
+                }
+            } else {
+                Box(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .background(Color(0xFF03736A), shape = RoundedCornerShape(4.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(Icons.Default.Check, contentDescription = "Розглянуто", tint = Color.White)
+                }
+            }
         }
     }
 }

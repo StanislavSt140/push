@@ -20,6 +20,7 @@ fun ForumDetailScreen(categoryId: Int, navController: NavController) {
     var posts: List<ForumPost>? by remember { mutableStateOf(emptyList<ForumPost>()) }
     var newReplyText by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
+    val defaultAuthor = "Анонім" // ⬅ Тимчасовий автор
 
     LaunchedEffect(categoryId) {
         scope.launch {
@@ -34,14 +35,14 @@ fun ForumDetailScreen(categoryId: Int, navController: NavController) {
         }
     }
 
-    AppHeader(navController, "Деталі теми") { // ⬅ Додаємо хедер
+    AppHeader(navController, "Деталі теми") {
         Column(modifier = Modifier.fillMaxSize().padding(top = 86.dp)) {
             LazyColumn {
                 items(posts.orEmpty()) { post ->
                     Column(modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)) {
                         Text(post.content, style = MaterialTheme.typography.bodyMedium)
-                        Text("Автор: ${post.author}", style = MaterialTheme.typography.bodySmall, color = Color.Gray) // ⬅ Автор повідомлення
-                        Text("Опубліковано: ${post.timestamp}", style = MaterialTheme.typography.bodySmall, color = Color.Gray) // ⬅ Час публікації
+                        Text("Автор: ${post.author}", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                        Text("Опубліковано: ${post.timestamp}", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
                     }
                 }
             }
@@ -57,9 +58,11 @@ fun ForumDetailScreen(categoryId: Int, navController: NavController) {
                 onClick = {
                     scope.launch {
                         try {
-                            val response = RetrofitClient.api.sendForumReply(categoryId, newReplyText)
+                            val response = RetrofitClient.api.sendForumReply(categoryId, newReplyText, defaultAuthor) // ⬅ Передаємо автора
                             if (response.status == "success") {
-                                posts = posts?.plus(ForumPost(posts?.size ?: 0 + 1, categoryId, newReplyText, "Користувач", "Щойно"))
+                                posts = posts?.plus(
+                                    ForumPost(posts?.size ?: 0 + 1, categoryId, newReplyText, defaultAuthor, "Щойно") // ⬅ Додаємо тимчасового автора
+                                )
                                 newReplyText = ""
                             }
                         } catch (e: Exception) {
