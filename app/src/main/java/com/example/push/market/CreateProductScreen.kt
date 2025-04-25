@@ -121,11 +121,12 @@ class CreateProductScreen(
                 Button(
                     onClick = { imagePickerLauncher.launch("image/*") },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF03736A)), // Заміна containerColor на backgroundColor
-                    contentColor = Color.White
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color(0xFF03736A), // Колір фону
+                        contentColor = Color.White    // Колір тексту
+                    )
                 ) {
-                    Text(text = "Вибрати Зображення"),
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(text = "Вибрати Зображення")
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -135,15 +136,13 @@ class CreateProductScreen(
                         onValueChange = {},
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { isMenuExpanded = !isMenuExpanded }, // Додаємо клікабельність на все поле
+                            .clickable { isMenuExpanded = !isMenuExpanded }, // Додаємо клікабельність до всього поля
                         readOnly = true,
                         label = { Text("Category") },
                         trailingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.ArrowDropDown,
-                                contentDescription = "Expand Menu",
-                                modifier = Modifier.clickable { isMenuExpanded = !isMenuExpanded } // Залишаємо клікабельність і для стрілочки
-                            )
+                            IconButton(onClick = { isMenuExpanded = !isMenuExpanded }) {
+                                Icon(Icons.Default.ArrowDropDown, contentDescription = "Expand Menu")
+                            }
                         }
                     )
                     DropdownMenu(
