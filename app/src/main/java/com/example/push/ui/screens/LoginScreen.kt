@@ -4,9 +4,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.push.data.RetrofitClient
+import com.example.push.data.UserPreferences
 import com.example.push.navigation.Screen
 import kotlinx.coroutines.launch
 
@@ -14,6 +16,8 @@ import kotlinx.coroutines.launch
 fun LoginScreen(navController: NavController) {
     var code by remember { mutableStateOf("") }
     var message by remember { mutableStateOf("") }
+    var userName by remember { mutableStateOf("") }
+    var userRole by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
 
     Column(
@@ -32,12 +36,15 @@ fun LoginScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        val userPrefs = UserPreferences(LocalContext.current)
+
         Button(onClick = {
             scope.launch {
                 val response = RetrofitClient.api.verifyCode(code)
                 message = response.message
                 if (response.status == "success") {
-                    navController.navigate(Screen.Home.route) // ⬅ Перехід до головного меню!
+                    userPrefs.saveUser(response.user_id!!, response.name!!, response.role!!)
+                    navController.navigate(Screen.Home.route) // ⬅ Переходимо в головне меню
                 }
             }
         }) {
@@ -47,6 +54,11 @@ fun LoginScreen(navController: NavController) {
         if (message.isNotEmpty()) {
             Spacer(modifier = Modifier.height(16.dp))
             Text(text = message)
+
+            if (message == "Авторизація успішна!") {
+                Text(text = "👤 Користувач: $userName")
+                Text(text = "🎭 Роль: $userRole")
+            }
         }
     }
 }

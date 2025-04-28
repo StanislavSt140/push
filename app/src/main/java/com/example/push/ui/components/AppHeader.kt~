@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.push.navigation.Screen
 import com.example.push.R
-import com.example.push.data.UserPreferences
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -93,6 +92,11 @@ fun AppHeader(navController: NavController, screenTitle: String, content: @Compo
             }
         }
     }
+}
+
+@Composable
+fun UserPreferences(x0: Context) {
+    TODO("Not yet implemented")
 }
 
 // 📌 **Оформлення кнопок**

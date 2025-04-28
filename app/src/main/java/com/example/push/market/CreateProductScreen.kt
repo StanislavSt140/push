@@ -47,6 +47,7 @@ fun CreateProductScreen(
     var isMenuExpanded by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
 
+
     val context = LocalContext.current
 
     // Функція для конвертації URI → File

@@ -1,5 +1,7 @@
 package com.example.push.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavHostController
@@ -53,9 +55,10 @@ sealed class Screen(val route: String) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PushNavHost(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = Screen.Market.route) {
+    NavHost(navController = navController, startDestination = Screen.Login.route) {
         composable(Screen.Login.route) { LoginScreen(navController) }
         composable(Screen.Home.route) { MainScreen(navController) }
         composable(Screen.Menu.route) { MainMenu(navController) }

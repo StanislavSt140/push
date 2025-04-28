@@ -95,16 +95,10 @@ data class ProductResponse(val status: String, val products: List<ProductItem>)
 data class ResponseStatus(val status: String, val message: String) // ⬅ Отримуємо статус та повідомлення
 data class SchoolFormResponse(val status: String, val form: SchoolFormItem)
 data class SchoolFormItem(val title: String, val content: String, val imageUrl: String) // ⬅ Контент у HTML
+data class AuthResponse(val status: String, val message: String)
 data class NewsResponse(val status: String, val news: List<NewsItem>)
 data class NewsItem(val id: Int, val title: String, val content: String, val imageUrl: String) // ⬅ Додаємо `imageUrl`
 
-data class AuthResponse(
-    val status: String,
-    val message: String,
-    val user_id: Int?, // ⬅ Додаємо ID користувача
-    val name: String?, // ⬅ Додаємо ім'я
-    val role: String? // ⬅ Додаємо роль
-)
 data class ProductItem(
     val id: Int,
     val name: String,

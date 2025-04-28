@@ -16,6 +16,9 @@ interface MarketApiService {
     @GET("push/market/getProductDetail.php") // ⬅ Отримання деталей товару
     suspend fun getProductDetail(@Query("productId") productId: Int): ApiResponse<ProductItem>
 
+    @GET("push/market/deleteProduct.php") // ⬅ Отримання деталей товару
+    suspend fun deleteProduct(@Query("productId") productId: Int): ApiResponse<ProductItem>
+
     @Multipart
     @POST("push/market/createProduct.php")
     suspend fun createProduct(

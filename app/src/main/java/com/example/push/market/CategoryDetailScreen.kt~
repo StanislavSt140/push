@@ -193,18 +193,18 @@ fun ProductItemView(
                     if (product.discountPrice != null && product.discountPrice > 0) {
                         Text(
                             text = "₴${product.discountPrice.toInt()}",
-                            style = TextStyle(fontSize = 16.sp),
+                            style = MaterialTheme.typography.titleLarge,
                             color = Color.Red
                         )
                         Text(
                             text = "₴${product.price.toInt()}",
-                            style = TextStyle(fontSize = 14.sp),
+                            style = MaterialTheme.typography.bodyLarge.copy(textDecoration = TextDecoration.LineThrough),
                             color = Color.Gray
                         )
                     } else {
                         Text(
                             text = "₴${product.price.toInt()}",
-                            style = TextStyle(fontSize = 16.sp),
+                            style = MaterialTheme.typography.titleLarge,
                             color = Color.Black
                         )
                     }

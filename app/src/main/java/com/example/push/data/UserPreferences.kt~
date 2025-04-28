@@ -1,0 +1,6 @@
+package com.example.push.data
+
+class UserPreferences {
+
+    
+}
