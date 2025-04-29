@@ -387,14 +387,69 @@ fun FoundersSection() {
             )
         )
 
-        LazyRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 24.dp),
-            horizontalArrangement = Arrangement.spacedBy(24.dp)
-        ) {
-            itemsIndexed(founders) { index, founder ->
-                FounderCard(founder)
+        LazyRow(modifier = Modifier.fillMaxWidth()) {
+            itemsIndexed(founders) { index,founder -> // ⬅ Використовуємо `items(founders)`, а не `items(founders.size)`
+                Card(
+                    modifier = Modifier.padding(8.dp).width(250.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.Transparent
+                    )
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                Brush.linearGradient(
+                                    colors = listOf(Color.Magenta, Color.Cyan)
+                                ),
+                                shape = RoundedCornerShape(20.dp)
+                            )
+                            .padding(16.dp)
+                            .height(200.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Image(
+                                painter = rememberAsyncImagePainter(founder.imageUrl),
+                                contentDescription = "Фото ${founder.name}",
+                                modifier = Modifier
+                                    .size(100.dp)
+                                    .clip(CircleShape)
+                                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.7f))
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Text(
+                                founder.name,
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    shadow = Shadow( // ⬅ Додаємо тінь
+                                        color = Color.Black.copy(alpha = 0.5f), // ⬅ Напівпрозора тінь
+                                        offset = Offset(4f, 4f), // ⬅ Зміщення тіні
+                                        blurRadius = 8f // ⬅ Розмиття тіні
+                                    ),
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                textAlign = TextAlign.Center,
+                                color = Color.White
+
+                            )
+                            Text(founder.description,
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    shadow = Shadow( // ⬅ Додаємо тінь
+                                        color = Color.Black.copy(alpha = 0.5f), // ⬅ Напівпрозора тінь
+                                        offset = Offset(4f, 4f), // ⬅ Зміщення тіні
+                                        blurRadius = 8f // ⬅ Розмиття тіні
+                                    )
+                                ),
+                                textAlign = TextAlign.Center,
+                                color = Color.White
+                            )
+                        }
+                    }
+                }
             }
         }
     }

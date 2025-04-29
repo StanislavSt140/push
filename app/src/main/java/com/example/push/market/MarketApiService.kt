@@ -46,6 +46,7 @@ data class CategoryItem(
 
 data class ProductItem(
     val id: Int,
+    val rating: Int,
     val title: String,
     val description: String,
     val price: Double,

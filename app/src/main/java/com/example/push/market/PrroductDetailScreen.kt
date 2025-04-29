@@ -34,7 +34,7 @@ fun ProductDetailScreen(productId: Int, navController: NavController) {
                 if (response.status == "success") {
                     product.value = response.data ?: ProductItem(
                         id = productId, title = "Невідомий товар", description = "Опис відсутній",
-                        price = 0.0, discountPrice = null, imageUrl = "", categoryId = null
+                        price = 0.0, discountPrice = null, imageUrl = "", categoryId = null,rating = 0
                     )
                 }
                 Log.d("ProductDetailScreen", "${response.status}: ${response.data} ${productId}")
@@ -65,7 +65,7 @@ fun ProductDetailScreen(productId: Int, navController: NavController) {
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Column {
-                            if (item.discountPrice != null) {
+                            if (item.discountPrice != null && item.discountPrice > 0) {
                                 Text(
                                     "₴${item.discountPrice}",
                                     style = MaterialTheme.typography.titleLarge,

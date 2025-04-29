@@ -1,6 +1,8 @@
 package com.example.push.market
 
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -10,9 +12,13 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -31,6 +37,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.push.data.UserPreferences
 import com.example.push.navigation.Screen
 import com.example.push.ui.components.AppHeader
+import com.example.push.ui.screens.RatingStars
 import kotlinx.coroutines.launch
 
 
@@ -58,6 +65,12 @@ fun CategoryDetailScreen(categoryId: Int, navController: NavController) {
     val userPrefs = remember { UserPreferences(context) }
     val userRole = userPrefs.getUserRole()
 
+    // ⬇ Стан для пошуку та фільтрації
+    val searchQuery = remember { mutableStateOf("") }
+    val selectedFilter = remember { mutableStateOf("Всі") }
+    var isFilterMenuExpanded by remember { mutableStateOf(false) }
+
+    // ⬇ Завантаження товарів
     LaunchedEffect(categoryId) {
         scope.launch {
             try {
@@ -74,16 +87,107 @@ fun CategoryDetailScreen(categoryId: Int, navController: NavController) {
     }
 
     AppHeader(navController, "Категорія") {
-        Column {
+        Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
             // 🔹 Відображення зображення категорії
             val categoryImageUrl = categoryImages[categoryId] ?: "https://example.com/default_image.jpg"
             Image(
                 painter = rememberAsyncImagePainter(categoryImageUrl),
                 contentDescription = "Зображення категорії",
-                modifier = Modifier.fillMaxWidth().padding(top = 68.dp).height(200.dp)
+                modifier = Modifier.fillMaxWidth().padding(top = 68.dp).height(150.dp)
             )
 
+            Spacer(modifier = Modifier.height(16.dp))
+
+
+            // 🔹 Меню фільтрів
+
+
+
+            var isFiltersVisible by remember { mutableStateOf(false) }
+
+            Button(
+                onClick = { isFiltersVisible = !isFiltersVisible }, // ✅ Відкриваємо або закриваємо фільтри
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = if (isFiltersVisible) "Закрити фільтри" else "Фільтри")
+            }
+
+            AnimatedVisibility(visible = isFiltersVisible) { // ✅ Анімація показу фільтрів
+                Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+                    // 🔹 Поле пошуку
+                    OutlinedTextField(
+                        value = searchQuery.value,
+                        onValueChange = { searchQuery.value = it },
+                        label = { Text("Пошук товарів") },
+                        modifier = Modifier.fillMaxWidth(),
+                        trailingIcon = { Icon(Icons.Default.Search, contentDescription = "Пошук") }
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // 🔹 Меню вибору фільтра
+
+                    Box(modifier = Modifier.fillMaxWidth().clickable { isFilterMenuExpanded = true }) {
+                        OutlinedTextField(
+                            value = selectedFilter.value,
+                            onValueChange = {},
+                            readOnly = true,
+                            enabled = false,
+                            label = { Text("Фільтр") },
+                            modifier = Modifier.fillMaxWidth(),
+                            trailingIcon = {
+                                Icon(Icons.Default.ArrowDropDown, contentDescription = "Розгорнути меню")
+                            }
+                        )
+
+                        DropdownMenu(
+                            expanded = isFilterMenuExpanded,
+                            onDismissRequest = { isFilterMenuExpanded = false }
+                        ) {
+                            listOf("Всі", "Ціна: зростаюча", "Ціна: спадна", "За рейтингом").forEach { filter ->
+                                DropdownMenuItem(
+                                    onClick = {
+                                        selectedFilter.value = filter
+                                        isFilterMenuExpanded = false
+                                    },
+                                    text = { Text(filter) }
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // 🔹 Фільтрація товарів
+            val filteredProducts = remember {
+                derivedStateOf {
+                    val sortedList = products.value.filter { product ->
+                        product.title.contains(searchQuery.value, ignoreCase = true)
+                    }
+
+                    when (selectedFilter.value) {
+                        "Ціна: зростаюча" -> sortedList.sortedBy { it.discountPrice?.takeIf { it > 0 } ?: it.price }
+                        "Ціна: спадна" -> sortedList.sortedByDescending { it.discountPrice?.takeIf { it > 0 } ?: it.price }
+                        "За рейтингом" -> sortedList.sortedByDescending { it.rating }
+                        else -> sortedList
+                    }
+                }
+            }
+
             // 🔹 Відображення товарів
+            if (selectedFilter.value != "Всі") {
+                Button(
+                    onClick = { selectedFilter.value = "Всі" },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
+                    border = BorderStroke(1.dp, Color.Gray),
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                    elevation = ButtonDefaults.buttonElevation(2.dp) // ✅ Робимо кнопку "плоскою"
+                ) {
+                    Text(text = "Очистити фільтр: ${selectedFilter.value}", color = Color.DarkGray)
+                }
+            }
+
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 modifier = Modifier.fillMaxSize(),
@@ -91,27 +195,25 @@ fun CategoryDetailScreen(categoryId: Int, navController: NavController) {
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(products.value.size) { index ->
-                    val product = products.value[index]
+                items(filteredProducts.value.size) { index ->
+                    val product = filteredProducts.value[index]
 
                     ProductItemView(
                         product,
                         onClick = { navController.navigate(Screen.ProductDetail.createRoute(product.id)) },
                         onEdit = { if (userRole == "admin") Log.d("Edit", "Редагування товару ${product.id}") },
-                        onDelete = { // ✅ Виправлено!
+                        onDelete = {
                             scope.launch {
                                 val response = RetrofitClient.marketApi.deleteProduct(product.id)
                                 if (response.status == "success") {
-                                    products.value = products.value.filter { it.id != product.id } // ✅ Оновлюємо список після видалення
+                                    products.value = products.value.filter { it.id != product.id }
                                 }
                             }
                         }
                     )
-
                 }
             }
         }
-        Spacer(modifier = Modifier.height(40.dp))
     }
 }
 
@@ -144,6 +246,25 @@ fun ProductItemView(
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(10.dp))
             )
+
+            // 🔹 Якщо є знижка, додаємо лейбл у лівий верхній кут
+            if (product.discountPrice != null && product.discountPrice > 0) {
+                val discountPercentage = (((product.price - product.discountPrice) / product.price) * 100).toInt() // ✅ Обчислюємо %
+
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopStart) // ✅ Вирівнюємо в лівому верхньому куті
+                        .padding(8.dp)
+                        .background(Color.Red, shape = RoundedCornerShape(6.dp))
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        text = "-$discountPercentage%",
+                        color = Color.White,
+                        style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                    )
+                }
+            }
 
             if (userRole == "admin") {
                 // 🔹 Переміщуємо кнопки у правий верхній кут
@@ -183,7 +304,6 @@ fun ProductItemView(
 
             Spacer(modifier = Modifier.height(4.dp))
 
-
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -193,18 +313,18 @@ fun ProductItemView(
                     if (product.discountPrice != null && product.discountPrice > 0) {
                         Text(
                             text = "₴${product.discountPrice.toInt()}",
-                            style = MaterialTheme.typography.titleLarge,
+                            style = TextStyle(fontSize = 16.sp),
                             color = Color.Red
                         )
                         Text(
                             text = "₴${product.price.toInt()}",
-                            style = MaterialTheme.typography.bodyLarge.copy(textDecoration = TextDecoration.LineThrough),
+                            style = TextStyle(fontSize = 14.sp, textDecoration = TextDecoration.LineThrough),
                             color = Color.Gray
                         )
                     } else {
                         Text(
                             text = "₴${product.price.toInt()}",
-                            style = MaterialTheme.typography.titleLarge,
+                            style = TextStyle(fontSize = 16.sp),
                             color = Color.Black
                         )
                     }
@@ -218,7 +338,23 @@ fun ProductItemView(
                         tint = Color(0xFF03736A)
                     )
                 }
+                
             }
+            RatingStarsShop(rating = product.rating)
+        }
+    }
+}
+
+@Composable
+fun RatingStarsShop(rating: Int) {
+    Row {
+        repeat(rating) { index ->
+            Icon(
+                imageVector = if (index < rating.toInt()) Icons.Filled.Star else Icons.Outlined.Star,
+                contentDescription = null,
+                tint = Color(0xFFFF0033),
+                modifier = Modifier.size(20.dp)
+            )
         }
     }
 }

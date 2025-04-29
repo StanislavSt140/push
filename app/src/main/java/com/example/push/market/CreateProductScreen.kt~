@@ -22,7 +22,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
-import com.example.push.navigation.Screen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -247,9 +246,7 @@ fun CreateProductScreen(
 
                         if (response.status == "success") {
                             errorMessage = "Продукт успішно додано!"
-                            navController.navigate(Screen.CategoryDetail.createRoute(
-                                selectedCategoryId!!
-                            )) // ✅ Переходимо назад
+                            navController.navigate(Screen.CategoryDetail.createRoute(selectedCategoryId)) // ✅ Переходимо назад
                         } else {
                             errorMessage = "Помилка: ${response.message ?: "Невідома помилка"}"
                         }
