@@ -34,7 +34,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -48,6 +47,16 @@ import com.example.push.data.RetrofitClient
 import com.example.push.navigation.Screen
 import com.example.push.ui.components.AppHeader
 import kotlinx.coroutines.launch
+
+// Виправлені імпорти для кастомного Shape
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.zIndex
 
 @Composable
 fun MainScreen(navController: NavController) {
@@ -73,7 +82,7 @@ fun MainScreen(navController: NavController) {
 
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(top = 86.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp) // ⬅ Додає відступи між блоками
+            verticalArrangement = Arrangement.spacedBy(16.dp) // 
         ) {
             item {
                 ImageSlider(
@@ -88,7 +97,7 @@ fun MainScreen(navController: NavController) {
 
             item { NewsSection(newsList.value, navController) }
 
-            item { SchoolAdvantagesSection() } // ⬅ Тепер вся сторінка скролиться вниз!
+            item { SchoolAdvantagesSection() } // 
         }
 
     }
@@ -98,21 +107,21 @@ fun MainScreen(navController: NavController) {
 fun ImageSlider(images: List<String>) {
     val pagerState = rememberPagerState(pageCount = { images.size })
 
-    Box(modifier = Modifier.fillMaxWidth().height(250.dp)) {
+    Box(modifier = Modifier.fillMaxWidth().height(150.dp)) {
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.fillMaxSize()
         ) { page ->
             Image(
                 painter = rememberAsyncImagePainter(images[page]),
-                contentDescription = "Слайдер",
+                contentDescription = "",
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
             )
         }
 
-        // 🔹 Навігаційні кнопки (Назад і Вперед)
-        val coroutineScope = rememberCoroutineScope() // ⬅ Запам’ятовуємо корутину
+        // 
+        val coroutineScope = rememberCoroutineScope() // 
         IconButton(
             onClick = {
                 coroutineScope.launch {
@@ -122,11 +131,11 @@ fun ImageSlider(images: List<String>) {
             modifier = Modifier
                 .align(Alignment.CenterStart)
                 .padding(16.dp)
-                .background(Color.Black.copy(alpha = 0.5f), shape = CircleShape) // ⬅ Напівпрозорий фон
+                .background(Color.Black.copy(alpha = 0.5f), shape = CircleShape) // 
         ) {
             Icon(
                 imageVector = Icons.Filled.ArrowBack,
-                contentDescription = "Назад",
+                contentDescription = "",
                 tint = Color.White
             )
         }
@@ -140,15 +149,15 @@ fun ImageSlider(images: List<String>) {
             modifier = Modifier
                 .align(Alignment.CenterEnd)
                 .padding(16.dp)
-                .background(Color.Black.copy(alpha = 0.5f), shape = CircleShape) // ⬅ Напівпрозорий фон
+                .background(Color.Black.copy(alpha = 0.5f), shape = CircleShape) // 
         ) {
             Icon(
                 imageVector = Icons.Filled.ArrowForward,
-                contentDescription = "Вперед",
+                contentDescription = "",
                 tint = Color.White
             )
         }
-        // 🔹 Індикатори сторінок
+        // 
         Row(
             modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 12.dp),
             horizontalArrangement = Arrangement.Center
@@ -174,7 +183,7 @@ fun NewsSection(newsList: List<NewsItem>, navController: NavController) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp)
         ) {
-            // Заголовок з тінню
+            // 
             Box(
                 modifier = Modifier
                     .shadow(8.dp, shape = RoundedCornerShape(12.dp))
@@ -184,7 +193,7 @@ fun NewsSection(newsList: List<NewsItem>, navController: NavController) {
                 Text("Події школи", color = Color.White, fontWeight = FontWeight.Bold)
             }
             Spacer(Modifier.width(8.dp))
-            // Рисочка
+            //
             Box(
                 modifier = Modifier
                     .height(6.dp)
@@ -224,7 +233,7 @@ fun NewsCard(news: NewsItem) {
             .background(Color(0xFF00BCD4), shape = RoundedCornerShape(16.dp))
             .padding(16.dp)
     ) {
-        // Додаємо зображення (зверху)
+        //
         if (!news.imageUrl.isNullOrEmpty()) {
             Image(
                 painter = rememberAsyncImagePainter(news.imageUrl),
@@ -246,8 +255,16 @@ fun NewsCard(news: NewsItem) {
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Докладніше", color = Color(0xFFFF5C8D), fontWeight = FontWeight.Medium)
-            Icon(Icons.Default.Info, contentDescription = null, tint = Color(0xFFFF5C8D))
+            Text(
+                text = "Докладніше",
+                color = Color.White,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier
+                    .shadow(8.dp, shape = RoundedCornerShape(12.dp))
+                    .background(Color(0xFFFF5C8D), shape = RoundedCornerShape(12.dp)) //
+                    .padding(horizontal = 12.dp, vertical = 6.dp) //
+            )
+           // Icon(Icons.Default.Info, contentDescription = null, tint = Color(0xFFFF5C8D))
         }
     }
 }
@@ -258,7 +275,7 @@ fun SchoolAdvantagesSection() {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp)
         ) {
-            // Заголовок з тінню
+            //
             Box(
                 modifier = Modifier
                     .shadow(8.dp, shape = RoundedCornerShape(12.dp))
@@ -268,7 +285,7 @@ fun SchoolAdvantagesSection() {
                 Text("Переваги нашої школи", color = Color.White, fontWeight = FontWeight.Bold)
             }
             Spacer(Modifier.width(8.dp))
-            // Рисочка
+            //
             Box(
                 modifier = Modifier
                     .height(6.dp)
@@ -291,23 +308,55 @@ fun SchoolAdvantagesSection() {
             "Цікаве позашкільне життя",
             "Зворотній зв'язок із батьками",
         )
-        val colors = listOf(Color(0xFF005B9F), Color(0xFF00BCD4)) // синій, бірюзовий
+        val colors = listOf(Color(0xFF005B9F), Color(0xFF00BCD4)) // ,
 
         Column(Modifier.padding(16.dp)) {
-            // Заголовок
-            // (див. блок 1)
+            //
+            // (
             Spacer(Modifier.height(16.dp))
             advantages.forEachIndexed { i, text ->
                 AdvantageItem(
                     text = text,
                     number = i + 1,
                     backgroundColor = colors[i % colors.size],
-                    modifier = Modifier.padding(vertical = 8.dp)
+                    isRight = i % 2 == 1,
+                    modifier = Modifier.padding(vertical = 12.dp)
                 )
+                Spacer(Modifier.height(16.dp))
             }
         }
     }
     FoundersSection()
+}
+
+
+class ArrowShape(private val isRight: Boolean) : Shape {
+    override fun createOutline(
+        size: Size,
+        layoutDirection: LayoutDirection,
+        density: Density
+    ): Outline {
+        val path = Path().apply {
+            if (isRight) {
+                moveTo(0f, 0f)
+                lineTo(size.width * 0.85f, 0f)
+                lineTo(size.width, size.height / 2)
+                lineTo(size.width * 0.85f, size.height)
+                lineTo(0f, size.height)
+                lineTo(size.width * 0.15f, size.height / 2)
+                close()
+            } else {
+                moveTo(size.width, 0f)
+                lineTo(size.width * 0.15f, 0f)
+                lineTo(0f, size.height / 2)
+                lineTo(size.width * 0.15f, size.height)
+                lineTo(size.width, size.height)
+                lineTo(size.width * 0.85f, size.height / 2)
+                close()
+            }
+        }
+        return Outline.Generic(path)
+    }
 }
 
 @Composable
@@ -315,32 +364,91 @@ fun AdvantageItem(
     text: String,
     number: Int,
     backgroundColor: Color,
+    isRight: Boolean,
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier
-            .shadow(8.dp, shape = RoundedCornerShape(24.dp))
-            .background(backgroundColor, shape = RoundedCornerShape(24.dp))
-            .padding(vertical = 12.dp, horizontal = 8.dp)
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = if (isRight) Arrangement.End else Arrangement.Start
     ) {
-        // Фігура з номером
         Box(
             modifier = Modifier
-                .size(48.dp)
-                .background(Color.White, shape = CircleShape)
-                .border(2.dp, backgroundColor, shape = CircleShape),
-            contentAlignment = Alignment.Center
+                .width(240.dp)
+                .height(56.dp)
+                .clip(ArrowShape(isRight))
+                .background(backgroundColor)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
-            Text(number.toString(), color = backgroundColor, fontWeight = FontWeight.Bold, fontSize = 22.sp)
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = if (isRight) Arrangement.End else Arrangement.Start
+            ) {
+                if (!isRight) {
+                    Text(
+                        text = text,
+                        color = Color.White,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        lineHeight = 12.sp,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 16.dp)
+                            .wrapContentHeight(Alignment.CenterVertically)
+                            .wrapContentWidth(Alignment.CenterHorizontally)
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Box(
+                        modifier = Modifier
+                            .offset(x = -10.dp, y = -2.dp) // ✅ Рухаємо кружок трохи вліво і вгору
+                            .zIndex(5f) // ✅ Виносимо на передній план
+                            .background(Color.White, shape = CircleShape)
+                            .size(36.dp), // ✅ Збільшуємо розмір
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = number.toString(),
+                            color = backgroundColor,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp
+                        )
+                    }
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .offset(x = 10.dp, y = -2.dp) // ✅ Рухаємо кружок трохи вправо і вгору
+                            .zIndex(5f)
+                            .background(Color.White, shape = CircleShape)
+                            .size(36.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = number.toString(),
+                            color = backgroundColor,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp
+                        )
+                    }
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        text = text,
+                        color = Color.White,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.End,
+                        lineHeight = 12.sp,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = 16.dp)
+                            .wrapContentHeight(Alignment.CenterVertically)
+                            .wrapContentWidth(Alignment.End)
+                    )
+                }
+            }
         }
-        Spacer(Modifier.width(12.dp))
-        Text(text, color = Color.White, fontWeight = FontWeight.Medium, fontSize = 16.sp)
     }
 }
 
-data class Founder(val name: String, val description: String, val imageUrl: String) // ⬅ Переконайся, що поле існує
 @Composable
 fun FoundersSection() {
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
@@ -348,17 +456,17 @@ fun FoundersSection() {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp)
         ) {
-            // Заголовок з тінню
+            //
             Box(
                 modifier = Modifier
                     .shadow(8.dp, shape = RoundedCornerShape(12.dp))
                     .background(Color(0xFFFF5C8D), shape = RoundedCornerShape(12.dp))
                     .padding(horizontal = 24.dp, vertical = 12.dp)
             ) {
-                Text("Переваги нашої школи", color = Color.White, fontWeight = FontWeight.Bold)
+                Text("Засновниці PUSH school", color = Color.White, fontWeight = FontWeight.Bold)
             }
             Spacer(Modifier.width(8.dp))
-            // Рисочка
+            //
             Box(
                 modifier = Modifier
                     .height(6.dp)
@@ -372,17 +480,17 @@ fun FoundersSection() {
         val founders = listOf(
             Founder(
                 name = "Ковальчук Олеся Валеріївна",
-                description = "Люблю подорожі та навчання. Школа має бути місцем, де учень може вільно висловлювати свої думки та отримувати підтримку.",
+                description = "Більш за все я люблю подорожувати та навчатися. Ще школяркою я свого часу потрапила до Голландії за програмою обміну учнями. Тоді була дуже вражена вільним діалогом, що відбувався між учнями й учителями, та дружелюбною атмосферою у школі, яку там відвідала. З того часу школа в моїх думках була саме такою. Зараз я вже сама маю двох славних діточок, і, як мати, я хочу, щоб вони навчалися саме в такій школі, де дитина вільно висловлює та аргументує свою точку зору, де вчитель – це друг, ментор та наставник, де є дружба та взаємоповага. Саме таку школу ми створюємо!",
                 imageUrl = "https://push-school.com/wp-content/uploads/2020/08/img_ph_Kovalchuk.png"
             ),
             Founder(
                 name = "Іванова Ганна Олександрівна",
-                description = "Хочу створити школу з динамічною освітою, де є Positive learning atmosphere, Support від вчителів і можливість бути High achiever!",
+                description = "Чому батьки відкривають власні школи? Насамперед це прагнення створити для своєї дитини умови здобуття грунтовної освіти та всебічного розвитку. Тому в нашій школі ми обрали рух до більш динамічної та осучасненої освіти. Отримання якісної освіти можливе тільки за умов перебування в школі з Positive learning atmosphere, де можна залишатися Unique, де достатньо Support з боку вчителів. Тільки завдяки цим умовам можливо стати High achiever в майбутньому!",
                 imageUrl = "https://push-school.com/wp-content/uploads/2020/08/img_ph_Ivanova.png"
             ),
             Founder(
                 name = "Васенко Анна Миколаївна",
-                description = "Навчання має бути зонією інтересів дітей. Ми прагнемо гармонійного розвитку та впевненості в силах для успіху!",
+                description = "Ідея відкрити приватну школу виникла завдяки власному досвіду. Як матір чотирьох чудових дітей, та я впевнена, що навчання має бути для дітей зоною їх інтересів та особистої відповідальності. Головним завданням школи є підтримка дитини як особистості та її прагнень до знань, а також надання впевненості в своїх силах. Тому, ми прагнемо гармонійного розвитку дітей в комфортних умовах, формування успішності сьогодні і благополуччя в майбутньому. Для цього ми й створюємо нашу школу. Приєднуйтесь до нас!",
                 imageUrl = "https://push-school.com/wp-content/uploads/2020/08/img_ph_Vasenko.png"
             )
         )
@@ -412,7 +520,7 @@ fun FounderCard(founder: Founder) {
     ) {
         Image(
             painter = rememberAsyncImagePainter(founder.imageUrl),
-            contentDescription = "Фото ${founder.name}",
+            contentDescription = "",
             modifier = Modifier
                 .size(140.dp)
                 .clip(RoundedCornerShape(16.dp))
@@ -444,20 +552,4 @@ fun FounderCard(founder: Founder) {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+data class Founder(val name: String, val description: String, val imageUrl: String) // 

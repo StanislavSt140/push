@@ -36,6 +36,7 @@ fun AppHeader(navController: NavController, screenTitle: String, content: @Compo
     val userPrefs = remember { UserPreferences(context) }
     val userName = userPrefs.getUserName()
     val userRole = userPrefs.getUserRole()
+    val userClass = userPrefs.getUserClass()
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -55,9 +56,12 @@ fun AppHeader(navController: NavController, screenTitle: String, content: @Compo
                     Spacer(modifier = Modifier.height(8.dp))
 
                     // ⬇ Відображення даних користувача
-                    Text(text = "👤 $userName", style = MaterialTheme.typography.bodyLarge)
-                    Text(text = "🎭 Роль: $userRole", style = MaterialTheme.typography.bodyMedium)
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.Start) { // ✅ Вирівнюємо по лівому краю
+                        Text(text = "👤 $userName", style = MaterialTheme.typography.bodyLarge)
+                        Text(text = "🎭 Роль: $userRole", style = MaterialTheme.typography.bodyMedium)
+                        Text(text = "🏫 Клас: $userClass", style = MaterialTheme.typography.bodyMedium)
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
 
                     // ⬇ СКРОЛЬОВАНИЙ список кнопок меню
                     Column(
