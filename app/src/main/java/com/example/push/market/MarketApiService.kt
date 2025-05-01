@@ -10,13 +10,13 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 
 interface MarketApiService {
-    @GET("push/market/getProducts.php") // ⬅ Отримання товарів (усіх або за категорією)
+    @GET("push/market/getProducts.php")
     suspend fun getProducts(@Query("categoryId") categoryId: Int? = null): ApiResponse<List<ProductItem>>
 
-    @GET("push/market/getProductDetail.php") // ⬅ Отримання деталей товару
+    @GET("push/market/getProductDetail.php")
     suspend fun getProductDetail(@Query("productId") productId: Int): ApiResponse<ProductItem>
 
-    @GET("push/market/deleteProduct.php") // ⬅ Отримання деталей товару
+    @GET("push/market/deleteProduct.php")
     suspend fun deleteProduct(@Query("productId") productId: Int): ApiResponse<ProductItem>
 
     @Multipart
@@ -27,11 +27,24 @@ interface MarketApiService {
         @Part("price") price: RequestBody,
         @Part("discountPrice") discountPrice: RequestBody?,
         @Part("categoryId") categoryId: RequestBody,
-        @Part image: MultipartBody.Part // ⬅ Оновлення типу `image`
+        @Part image: MultipartBody.Part
     ): ApiResponse<String>
 
-    @GET("push/market/getCategories.php") // ⬅ Отримання списку категорій
+    @GET("push/market/getCategories.php")
     suspend fun getCategories(): ApiResponse<List<CategoryItem>>
+
+    @Multipart
+    @POST("push/market/updateProduct.php")
+    suspend fun updateProduct(
+        @Part("productId") productId: RequestBody,
+        @Part("title") title: RequestBody,
+        @Part("description") description: RequestBody,
+        @Part("price") price: RequestBody,
+        @Part("rating") rating: RequestBody,
+        @Part("discountPrice") discountPrice: RequestBody?,
+        @Part("categoryId") categoryId: RequestBody,
+        @Part image: MultipartBody.Part?
+    ): ApiResponse<String>
 }
 data class ApiResponse<T>(
     val status: String,

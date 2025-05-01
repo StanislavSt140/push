@@ -8,6 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import com.example.push.market.CategoryDetailScreen
 import com.example.push.market.CreateProductScreen
+import com.example.push.market.EditProductScreen
 import com.example.push.market.MarketScreen
 import com.example.push.market.ProductDetailScreen
 import com.example.push.market.RetrofitClient
@@ -31,6 +32,13 @@ sealed class Screen(val route: String) {
         fun createRoute(productId: Int) = "productDetail/$productId"
     }
     object CreateProduct : Screen("createProduct")
+
+    // ⬅ Додаємо маршрут для редагування товару
+        object EditProduct {
+            const val route = "editProduct/{productId}"
+            fun createRoute(productId: Int) = "editProduct/$productId"
+        }
+
 
     object NewsDetail : Screen("newsDetail/{newsId}") {
         fun createRoute(newsId: Int) = "newsDetail/$newsId"
@@ -123,6 +131,14 @@ fun PushNavHost(navController: NavHostController) {
                 ProductDetailScreen(productId, navController)
             }
         }
+        // ✅ Додаємо маршрут для редагування товару
+        composable(Screen.EditProduct.route) { backStackEntry ->
+            val productId = backStackEntry.arguments?.getString("productId")?.toIntOrNull()
+            if (productId != null) {
+                EditProductScreen(navController, RetrofitClient.marketApi, rememberCoroutineScope(), productId)
+            }
+        }
+
     }
 }
 

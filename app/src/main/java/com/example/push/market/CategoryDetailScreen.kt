@@ -144,7 +144,7 @@ fun CategoryDetailScreen(categoryId: Int, navController: NavController) {
                             expanded = isFilterMenuExpanded,
                             onDismissRequest = { isFilterMenuExpanded = false }
                         ) {
-                            listOf("Всі", "Ціна: зростаюча", "Ціна: спадна", "За рейтингом").forEach { filter ->
+                            listOf("Всі", "За назвою", "Ціна: зростаюча", "Ціна: спадна", "За рейтингом").forEach { filter ->
                                 DropdownMenuItem(
                                     onClick = {
                                         selectedFilter.value = filter
@@ -167,6 +167,7 @@ fun CategoryDetailScreen(categoryId: Int, navController: NavController) {
                     }
 
                     when (selectedFilter.value) {
+                        "За назвою" -> sortedList.sortedBy { it.title }
                         "Ціна: зростаюча" -> sortedList.sortedBy { it.discountPrice?.takeIf { it > 0 } ?: it.price }
                         "Ціна: спадна" -> sortedList.sortedByDescending { it.discountPrice?.takeIf { it > 0 } ?: it.price }
                         "За рейтингом" -> sortedList.sortedByDescending { it.rating }
@@ -201,7 +202,9 @@ fun CategoryDetailScreen(categoryId: Int, navController: NavController) {
                     ProductItemView(
                         product,
                         onClick = { navController.navigate(Screen.ProductDetail.createRoute(product.id)) },
-                        onEdit = { if (userRole == "admin") Log.d("Edit", "Редагування товару ${product.id}") },
+                        onEdit = {
+                            navController.navigate("EditProduct/${product.id}") // ✅ Використання рядка для навігації
+                        },
                         onDelete = {
                             scope.launch {
                                 val response = RetrofitClient.marketApi.deleteProduct(product.id)
