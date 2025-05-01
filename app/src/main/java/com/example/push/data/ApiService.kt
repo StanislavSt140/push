@@ -7,6 +7,7 @@ import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
+import com.google.gson.annotations.SerializedName
 
 interface ApiService {
 
@@ -64,6 +65,14 @@ interface ApiService {
         @Field("userName") userName: String,
         @Field("complaintText") complaintText: String
     ): ResponseStatus
+
+    @POST("push/sendComplaintReply.php") // ⬅ Відповідаємо на скаргу
+    @FormUrlEncoded
+    suspend fun sendComplaintReply(
+        @Field("complaintId") complaintId: Int,
+        @Field("replyText") replyText: String
+    ): ResponseStatus
+
     @GET("push/getComplaintDetails.php") // ⬅ Отримуємо деталі скарги
     suspend fun getComplaintDetails(@Query("complaintId") complaintId: Int): ApiResponse<ComplaintItem>
 
@@ -72,7 +81,6 @@ interface ApiService {
 
     @GET("push/getRewardDetails.php") // ⬅ Отримуємо деталі нагороди
     suspend fun getRewardDetails(@Query("rewardId") rewardId: Int): ApiResponse<RewardItem>
-
 
     @GET("push/getWishlistCategories.php") // ⬅ Отримуємо список категорій побажань
     suspend fun getWishlistCategories(): ApiResponse<List<WishlistCategory>>
@@ -89,6 +97,22 @@ interface ApiService {
 
     @GET("push/getWishlistItem.php") // ⬅ Отримуємо деталі конкретного побажання
     suspend fun getWishlistItem(@Query("wishId") wishId: Int): ApiResponse<WishlistItem>
+
+    @POST("push/addUser.php")
+    @FormUrlEncoded
+    suspend fun addUser(
+        @Field("name") name: String,
+        @Field("class") className: String,
+        @Field("phone") phone: String,
+        @Field("code") code: String
+    ): ResponseStatus
+
+    @GET("push/getAllUsers.php")
+    suspend fun getAllUsers(): ApiResponse<List<UserItem>>
+
+    @GET("push/getUsersByClass.php")
+    suspend fun getUsersByClass(@Query("className") className: String): ApiResponse<List<UserItem>>
+
 }
 
 data class ProductResponse(val status: String, val products: List<ProductItem>)
@@ -155,6 +179,13 @@ data class WishlistItem(
     val content: String,
     val timestamp: String
 )
+data class UserItem(
+    val id: Int,
+    val name: String,
+    @SerializedName("class") val className: String,
+    val phone: String
+)
+
 object RetrofitClient {
     val api: ApiService by lazy {
         Retrofit.Builder()

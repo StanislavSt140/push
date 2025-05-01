@@ -61,6 +61,11 @@ sealed class Screen(val route: String) {
     object CategoryDetail : Screen("categoryDetail/{categoryId}") {
         fun createRoute(categoryId: Int) = "categoryDetail/$categoryId"
     }
+    object AddStudent : Screen("add_student")
+    object ClassList : Screen("class_list")
+    object ClassStudents : Screen("class_students/{className}") {
+        fun createRoute(className: String) = "class_students/$className"
+    }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -138,9 +143,15 @@ fun PushNavHost(navController: NavHostController) {
                 EditProductScreen(navController, RetrofitClient.marketApi, rememberCoroutineScope(), productId)
             }
         }
-
+        composable(Screen.AddStudent.route) {
+            AddStudentScreen(navController)
+        }
+        composable(Screen.ClassList.route) {
+            ClassListScreen(navController)
+        }
+        composable(Screen.ClassStudents.route) { backStackEntry ->
+            val className = backStackEntry.arguments?.getString("className") ?: ""
+            ClassStudentsScreen(navController, className)
+        }
     }
 }
-
-
-

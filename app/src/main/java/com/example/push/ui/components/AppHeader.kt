@@ -5,6 +5,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
@@ -57,16 +59,28 @@ fun AppHeader(navController: NavController, screenTitle: String, content: @Compo
                     Text(text = "🎭 Роль: $userRole", style = MaterialTheme.typography.bodyMedium)
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    CustomNavButton("Головна") { navController.navigate(Screen.Home.route) }
-                    CustomNavButton("Головне меню") { navController.navigate(Screen.Menu.route) }
-                    CustomNavButton("Push School Shop") { navController.navigate(Screen.Shop.route) }
-                    CustomNavButton("Учнівський Форум") { navController.navigate(Screen.Forum.route) }
-                    CustomNavButton("Скарбничка побажань") { navController.navigate(Screen.Wishlist.route) }
-                    CustomNavButton("Скарги") { navController.navigate(Screen.Complaints.route) }
-                    CustomNavButton("Шкільна форма") { navController.navigate(Screen.Forms.route) }
-                    CustomNavButton("Система заохочення") { navController.navigate(Screen.Rewards.route) }
-                    CustomNavButton("Push News") { navController.navigate(Screen.News.route) }
-                    CustomNavButton("Креативний Маркет") { navController.navigate(Screen.Market.route) }
+                    // ⬇ СКРОЛЬОВАНИЙ список кнопок меню
+                    Column(
+                        modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
+                        verticalArrangement = Arrangement.Top,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        CustomNavButton("Головна") { navController.navigate(Screen.Home.route) }
+                        CustomNavButton("Головне меню") { navController.navigate(Screen.Menu.route) }
+                        if (userRole == "admin") {
+                            CustomNavButton("Додати учня") { navController.navigate(Screen.AddStudent.route) }
+
+                        }
+                        CustomNavButton("Огляд учнів") { navController.navigate(Screen.ClassList.route) }
+                        CustomNavButton("Push School Shop") { navController.navigate(Screen.Shop.route) }
+                        CustomNavButton("Учнівський Форум") { navController.navigate(Screen.Forum.route) }
+                        CustomNavButton("Скарбничка побажань") { navController.navigate(Screen.Wishlist.route) }
+                        CustomNavButton("Скарги") { navController.navigate(Screen.Complaints.route) }
+                        CustomNavButton("Шкільна форма") { navController.navigate(Screen.Forms.route) }
+                        CustomNavButton("Система заохочення") { navController.navigate(Screen.Rewards.route) }
+                        CustomNavButton("Push News") { navController.navigate(Screen.News.route) }
+                        CustomNavButton("Креативний Маркет") { navController.navigate(Screen.Market.route) }
+                    }
                 }
             }
         }
