@@ -44,13 +44,8 @@ fun LoginScreen(navController: NavController) {
                 val response = RetrofitClient.api.verifyCode(code)
                 message = response.message
                 if (response.status == "success") {
-
-                    userPrefs.saveUser(
-                        response.user_id ?: -1,
-                        response.name ?: "Гість",
-                        response.className ?: "Без класу",
-                        response.role ?: "Без ролі"
-                    )
+                    
+                    userPrefs.saveUser(response.user_id!!, response.name!!, response.role!!, response.className)
 
                     navController.navigate(Screen.Home.route) // ⬅ Переходимо в головне меню
                 }
