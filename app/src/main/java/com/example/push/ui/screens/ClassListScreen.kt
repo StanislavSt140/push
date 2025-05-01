@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.push.ui.components.AppHeader
 import com.example.push.data.RetrofitClient
@@ -56,36 +57,40 @@ fun ClassListScreen(navController: NavController) {
 
     AppHeader(navController, "Класи учнів") {
         Box(modifier = Modifier.fillMaxSize().padding(top = 86.dp)) {
-            if (userRole == "admin") {
-                // Кнопка "Додати учня"
-                FloatingActionButton(
-                    onClick = {
-                        Log.d("ClassListScreen", "Add Student button clicked")
-                        navController.navigate(Screen.AddStudent.route)
-                              },
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(16.dp, bottom = 36.dp),
-                    containerColor = MaterialTheme.colorScheme.primary
-                ) {
-                    Icon(Icons.Filled.Add, contentDescription = "Додати учня")
-                }
-            }
             if (isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             } else {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    items(classList) { className ->
-                        ClassDoorItem(className = className) {
-                            navController.navigate("class_students/$className")
+                Box(modifier = Modifier.fillMaxSize()) { // ✅ Окремий контейнер для списку
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        items(classList) { className ->
+                            ClassDoorItem(className = className) {
+                                navController.navigate("class_students/$className")
+                            }
                         }
                     }
+                }
+            }
+
+            // ✅ Переконуємося, що кнопка "Додати учня" **завжди** поверх інших елементів
+            if (userRole == "admin") {
+                FloatingActionButton(
+                    onClick = {
+                        Log.d("ClassListScreen", "✅ Кнопка натиснута")
+                        navController.navigate(Screen.AddStudent.route)
+                    },
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(16.dp, bottom = 36.dp)
+                        .zIndex(1f), // ✅ Піднімаємо кнопку поверх `LazyVerticalGrid`
+                    containerColor = MaterialTheme.colorScheme.primary
+                ) {
+                    Icon(Icons.Filled.Add, contentDescription = "Додати учня")
                 }
             }
 

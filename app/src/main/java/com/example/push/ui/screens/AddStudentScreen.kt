@@ -12,6 +12,7 @@ import com.example.push.data.RetrofitClient
 import com.example.push.data.UserPreferences
 import kotlinx.coroutines.launch
 import androidx.compose.ui.platform.LocalContext
+import com.example.push.navigation.Screen
 import com.example.push.ui.components.AppHeader
 
 @Composable
@@ -99,6 +100,8 @@ fun AddStudentScreen(navController: NavController) {
                             studentClass = ""
                             phone = ""
                             code = ""
+                            navController.navigate(Screen.ClassList.route)
+
                         } else {
                             popupMessage = "❌ Помилка: ${response.message ?: "Невідома помилка"}"
                         }

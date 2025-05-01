@@ -67,10 +67,10 @@ fun AppHeader(navController: NavController, screenTitle: String, content: @Compo
                     ) {
                         CustomNavButton("Головна") { navController.navigate(Screen.Home.route) }
                         CustomNavButton("Головне меню") { navController.navigate(Screen.Menu.route) }
-                        if (userRole == "admin") {
-                            CustomNavButton("Додати учня") { navController.navigate(Screen.AddStudent.route) }
-
-                        }
+//                        if (userRole == "admin") {
+//                            CustomNavButton("Додати учня") { navController.navigate(Screen.AddStudent.route) }
+//
+//                        }
                         CustomNavButton("Огляд учнів") { navController.navigate(Screen.ClassList.route) }
                         CustomNavButton("Push School Shop") { navController.navigate(Screen.Shop.route) }
                         CustomNavButton("Учнівський Форум") { navController.navigate(Screen.Forum.route) }

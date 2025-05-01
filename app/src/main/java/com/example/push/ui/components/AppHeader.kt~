@@ -69,8 +69,9 @@ fun AppHeader(navController: NavController, screenTitle: String, content: @Compo
                         CustomNavButton("Головне меню") { navController.navigate(Screen.Menu.route) }
                         if (userRole == "admin") {
                             CustomNavButton("Додати учня") { navController.navigate(Screen.AddStudent.route) }
-                            CustomNavButton("Огляд учнів") { navController.navigate(Screen.ClassList.route) }
+
                         }
+                        CustomNavButton("Огляд учнів") { navController.navigate(Screen.ClassList.route) }
                         CustomNavButton("Push School Shop") { navController.navigate(Screen.Shop.route) }
                         CustomNavButton("Учнівський Форум") { navController.navigate(Screen.Forum.route) }
                         CustomNavButton("Скарбничка побажань") { navController.navigate(Screen.Wishlist.route) }
