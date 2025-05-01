@@ -93,7 +93,7 @@ fun CategoryDetailScreen(categoryId: Int, navController: NavController) {
             Image(
                 painter = rememberAsyncImagePainter(categoryImageUrl),
                 contentDescription = "Зображення категорії",
-                modifier = Modifier.fillMaxWidth().padding(top = 68.dp).height(150.dp)
+                modifier = Modifier.fillMaxWidth().padding(top = 68.dp).height(100.dp)
             )
 
             Spacer(modifier = Modifier.height(16.dp))

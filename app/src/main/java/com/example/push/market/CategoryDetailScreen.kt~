@@ -338,7 +338,7 @@ fun ProductItemView(
                         tint = Color(0xFF03736A)
                     )
                 }
-                
+
             }
             RatingStarsShop(rating = product.rating)
         }
@@ -353,7 +353,7 @@ fun RatingStarsShop(rating: Int) {
                 imageVector = if (index < rating.toInt()) Icons.Filled.Star else Icons.Outlined.Star,
                 contentDescription = null,
                 tint = Color(0xFFFF0033),
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(15.dp)
             )
         }
     }
