@@ -128,7 +128,7 @@ data class AuthResponse(
     val user_id: Int?, // ⬅ Додаємо ID користувача
     val name: String?, // ⬅ Додаємо ім'я
     val role: String?, // ⬅ Додаємо роль
-    val class: String? // ⬅ Додаємо class
+    @SerializedName("class") val className: String, // ⬅ Додаємо class
 )
 data class ProductItem(
     val id: Int,

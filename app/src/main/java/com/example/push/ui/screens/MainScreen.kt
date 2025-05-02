@@ -81,7 +81,7 @@ fun MainScreen(navController: NavController) {
 
 
         LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(top = 86.dp),
+            modifier = Modifier.fillMaxSize().padding(top = 104.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp) // 
         ) {
             item {

@@ -87,7 +87,7 @@ fun ComplaintsScreen(navController: NavController) {
                     text = {
                         Column {
                             TextField(
-                                value = userRole.'--'.userClass,
+                                value = "$userRole - $userClass",
                                 onValueChange = { userName = it },
                                 label = { Text("Ваше ім'я") },
                                 modifier = Modifier.fillMaxWidth()

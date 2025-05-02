@@ -99,7 +99,7 @@ fun WishlistCategoryItem(category: WishlistCategory, onClick: () -> Unit) {
                         Color(0xFFFF4081), // ✅ Напівпрозорий фон
                         shape = RoundedCornerShape(12.dp) // ✅ Закруглені кути
                     )
-                     .shadow(16.dp) // ✅ Додаємо тінь
+                     .shadow(6.dp) // ✅ Додаємо тінь
                     //  .shadow(6.dp, shape = RoundedCornerShape(12.dp)) // ✅ Додаємо тінь
                     .padding(horizontal = 12.dp, vertical = 6.dp) // ✅ Збільшуємо внутрішні відступи
             )

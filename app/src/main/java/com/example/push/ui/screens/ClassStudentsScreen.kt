@@ -37,7 +37,7 @@ fun ClassStudentsScreen(navController: NavController, className: String) {
     }
 
     AppHeader(navController, "Учні класу $className") {
-        Box(modifier = Modifier.fillMaxSize().padding(top = 86.dp)) {
+        Box(modifier = Modifier.fillMaxSize().padding(top = 104.dp)) {
             if (isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             } else {

@@ -49,7 +49,7 @@ fun ShopScreen(navController: NavController) {
     }
 
     AppHeader(navController, "Push School Shop") {
-        Column(modifier = Modifier.fillMaxSize().padding(top = 104.dp, start = 16.dp, end = 16.dp)) { // ⬅ Менші відступи!
+        Column(modifier = Modifier.fillMaxSize().padding(top = 104.dp, start = 8.dp, end = 8.dp)) { // ⬅ Менші відступи!
             if (products.value.isNotEmpty()) {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),

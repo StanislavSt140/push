@@ -32,7 +32,7 @@ fun NewsDetailScreen(newsId: Int, navController: NavController) {
     AppHeader(navController, newsItem?.title ?: "Loading...") { // ⬅ Динамічно передаємо заголовок
         Crossfade(targetState = newsItem) { news ->
             if (news != null) {
-                Column(modifier = Modifier.fillMaxSize().padding(top = 16.dp)) {
+                Column(modifier = Modifier.fillMaxSize().padding(top = 16.dp, start = 16.dp, end = 16.dp)) {
                     Spacer(modifier = Modifier.height(84.dp))
                     Text(
                         text = news.title,

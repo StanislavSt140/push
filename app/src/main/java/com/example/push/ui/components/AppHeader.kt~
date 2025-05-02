@@ -40,7 +40,7 @@ fun AppHeader(navController: NavController, screenTitle: String, content: @Compo
     val userClass = userPrefs.getUserClass()
 
     val gradientColors = listOf(
-        Color(0xFFFF4081),  // Pink
+        Color(0xFF230486),  // Pink
         Color(0xFF1E0F4F)   // Dark Purple
     )
 

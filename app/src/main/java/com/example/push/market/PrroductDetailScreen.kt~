@@ -101,7 +101,7 @@ fun ProductDetailScreen(productId: Int, navController: NavController) {
                         )
                     }
                     Text(
-                        text = "Товар створений: ${item.user?.name ?: "Невідомий користувач"} (${item.user?.className ?: "—"})",
+                        text = "Товар створив(ла): ${item.user?.name ?: "Невідомий користувач"} (${item.user?.className ?: "—"})",
                         style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray),
                         modifier = Modifier.padding(top = 8.dp)
                     )

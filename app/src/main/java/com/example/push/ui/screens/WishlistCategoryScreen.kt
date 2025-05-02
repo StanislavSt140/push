@@ -63,7 +63,7 @@ fun WishlistCategoryScreen(categoryId: Int, navController: NavController) {
                 }
             }
         ) { paddingValues ->
-            Column(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(top = 56.dp)) {
+            Column(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(top = 76.dp)) {
 
                 LazyColumn {
                     itemsIndexed(wishlist.value) { index, categoryId ->

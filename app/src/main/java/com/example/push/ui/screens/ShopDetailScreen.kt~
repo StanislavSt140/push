@@ -98,7 +98,7 @@ fun ShopDetailScreen(productId: Int, navController: NavController) {
                 // 🔙 Кнопка "Назад"
                 Button(
                     onClick = { navController.popBackStack() },
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 36.dp),
                     colors = ButtonDefaults.buttonColors(
                     backgroundColor = Color(0xFF03736A),  // ⬅ Змінюємо фон кнопки
                     contentColor = Color.White   // ⬅ Змінюємо колір тексту

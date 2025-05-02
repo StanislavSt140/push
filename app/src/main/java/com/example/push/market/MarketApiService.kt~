@@ -2,7 +2,6 @@ package com.example.push.market
 
 
 
-import com.example.push.data.UserItem
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Retrofit
@@ -69,7 +68,7 @@ data class ProductItem(
     val discountPrice: Double?, // ⬅ Може бути `null`, якщо знижки немає
     val imageUrl: String,
     val categoryId: Int?, // ⬅ Прив’язуємо товар до категорії
-    val user: UserItem?
+    
 )
 
 object RetrofitClient {

@@ -43,7 +43,7 @@ fun SchoolFormScreen(navController: NavController) {
     }
 
     AppHeader(navController, formItem?.title ?: "Шкільна Форма") {
-        Column(modifier = Modifier.fillMaxSize().padding(top = 104.dp, start = 16.dp, end = 16.dp)) {
+        Column(modifier = Modifier.fillMaxSize().padding(top = 76.dp)) {
             formItem?.let { form ->
                 Image(
                     painter = rememberAsyncImagePainter(form.imageUrl),

@@ -113,6 +113,9 @@ interface ApiService {
     @GET("push/getUsersByClass.php")
     suspend fun getUsersByClass(@Query("className") className: String): ApiResponse<List<UserItem>>
 
+    @GET("push/getUsersById.php")
+    suspend fun getUsersById(@Query("userId") userId: String): ApiResponse<List<UserItem>>
+
 }
 
 data class ProductResponse(val status: String, val products: List<ProductItem>)

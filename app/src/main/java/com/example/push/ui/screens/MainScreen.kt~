@@ -400,7 +400,7 @@ fun AdvantageItem(
                     Spacer(Modifier.width(8.dp))
                     Box(
                         modifier = Modifier
-                            .offset(x = -6.dp, y = -2.dp) // ✅ Рухаємо кружок трохи вліво і вгору
+                            .offset(x = -10.dp, y = -2.dp) // ✅ Рухаємо кружок трохи вліво і вгору
                             .zIndex(5f) // ✅ Виносимо на передній план
                             .background(Color.White, shape = CircleShape)
                             .size(36.dp), // ✅ Збільшуємо розмір
@@ -416,7 +416,7 @@ fun AdvantageItem(
                 } else {
                     Box(
                         modifier = Modifier
-                            .offset(x = 6.dp, y = -2.dp) // ✅ Рухаємо кружок трохи вправо і вгору
+                            .offset(x = 10.dp, y = -2.dp) // ✅ Рухаємо кружок трохи вправо і вгору
                             .zIndex(5f)
                             .background(Color.White, shape = CircleShape)
                             .size(36.dp),
@@ -436,10 +436,10 @@ fun AdvantageItem(
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.End,
-                        lineHeight = 10.sp,
+                        lineHeight = 12.sp,
                         modifier = Modifier
                             .weight(1f)
-                            .padding(horizontal = 8.dp)
+                            .padding(end = 16.dp)
                             .wrapContentHeight(Alignment.CenterVertically)
                             .wrapContentWidth(Alignment.End)
                     )

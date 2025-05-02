@@ -86,8 +86,7 @@ fun ForumDetailScreen(categoryId: Int, navController: NavController) {
                         }
                     }
                 },
-                modifier = Modifier.fillMaxWidth().padding(top = 16.dp,start = 16.dp, end = 16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF4081), contentColor = Color.White)
+                modifier = Modifier.fillMaxWidth().padding(top = 16.dp,start = 16.dp, end = 16.dp)
             ) {
                 Text("Надіслати")
             }

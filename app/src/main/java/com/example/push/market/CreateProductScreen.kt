@@ -22,6 +22,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
+import com.example.push.data.UserPreferences
 import com.example.push.navigation.Screen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -49,7 +50,11 @@ fun CreateProductScreen(
     var errorMessage by remember { mutableStateOf("") }
 
 
+
     val context = LocalContext.current
+
+    val userPrefs = remember { UserPreferences(context) }
+    val userId = userPrefs.getUserId()
 
     // Функція для конвертації URI → File
     fun getFileFromUri(context: Context, uri: Uri): File? {
@@ -235,6 +240,7 @@ fun CreateProductScreen(
                         val pricePart = productPrice.toRequestBody("text/plain".toMediaTypeOrNull())
                         val discountPart = productDiscountPrice.takeIf { it.isNotEmpty() }?.toRequestBody("text/plain".toMediaTypeOrNull())
                         val categoryIdPart = selectedCategoryId?.toString()?.toRequestBody("text/plain".toMediaTypeOrNull())
+                        val usId = userId.toString().toRequestBody("text/plain".toMediaTypeOrNull())
 
                         val response = marketApiService.createProduct(
                             title = titlePart,
@@ -242,7 +248,8 @@ fun CreateProductScreen(
                             price = pricePart,
                             discountPrice = discountPart,
                             categoryId = categoryIdPart!!,
-                            image = imagePart
+                            image = imagePart,
+                            userId = usId
                         )
 
                         if (response.status == "success") {

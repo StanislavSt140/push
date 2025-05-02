@@ -47,7 +47,7 @@ fun ShopDetailScreen(productId: Int, navController: NavController) {
     AppHeader(navController, product?.name ?: "Деталі товару") {
         product?.let { item ->
             Column(
-                modifier = Modifier.fillMaxSize().padding(top = 86.dp) // ⬅ Коригуємо відступи
+                modifier = Modifier.fillMaxSize().padding(top = 104.dp, start = 16.dp, end = 16.dp) // ⬅ Коригуємо відступи
             ) {
                 Image(
                     painter = rememberAsyncImagePainter(item.imageUrl),

@@ -33,7 +33,7 @@ fun RewardsDetailScreen(rewardId: Int, navController: NavController) {
     }
 
     AppHeader(navController, "Деталі нагороди") {
-        Column(modifier = Modifier.fillMaxSize().padding(top = 86.dp)) {
+        Column(modifier = Modifier.fillMaxSize().padding(top = 104.dp, start = 16.dp, end = 16.dp)) {
             reward.value?.let {
                 Text(it.title, style = MaterialTheme.typography.headlineMedium)
                 Spacer(modifier = Modifier.height(16.dp))

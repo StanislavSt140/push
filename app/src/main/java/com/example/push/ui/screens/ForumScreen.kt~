@@ -56,7 +56,7 @@ fun ForumScreen(navController: NavController) {
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = { isDialogOpen = true },
-                    containerColor = Color(0xFF35169A),
+                    containerColor = Color(0xFF1E0F4F),
                     contentColor = Color.White
                 ) {
                     Icon(Icons.Filled.Add, contentDescription = "Створити тему")

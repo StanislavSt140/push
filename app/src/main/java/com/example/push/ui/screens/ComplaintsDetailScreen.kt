@@ -45,7 +45,7 @@ fun ComplaintsDetailScreen(complaintId: Int, navController: NavController) {
         }
     }
     AppHeader(navController, "Скарги") {
-    Column(modifier = Modifier.fillMaxSize().padding(top = 86.dp)) {
+    Column(modifier = Modifier.fillMaxSize().padding(top = 104.dp)) {
         complaint.value?.let {
             Text("Автор: ${it.author}", style = MaterialTheme.typography.titleMedium)
             Text(it.description, style = MaterialTheme.typography.bodyMedium)
