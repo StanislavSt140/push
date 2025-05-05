@@ -2,6 +2,7 @@ package com.example.push.market
 
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -14,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -27,7 +29,10 @@ import kotlinx.coroutines.launch
 fun MarketScreen(navController: NavController) {
     val categories = remember { mutableStateOf(emptyList<CategoryItem>()) }
     val scope = rememberCoroutineScope()
-
+    val gradientColors = listOf(
+        Color(0xFFFF4081),  // Pink
+        Color(0xFF1E0F4F)   // Dark Purple
+    )
     LaunchedEffect(Unit) {
         scope.launch {
             try {
@@ -43,6 +48,7 @@ fun MarketScreen(navController: NavController) {
     }
 
     AppHeader(navController, "Креативний Маркет") {
+
         Scaffold(
             containerColor = Color.White,
             floatingActionButton = {
@@ -54,6 +60,20 @@ fun MarketScreen(navController: NavController) {
                 }
             }
         ) { paddingValues ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.linearGradient(
+                            colors = gradientColors,
+                            start = androidx.compose.ui.geometry.Offset(
+                                Float.POSITIVE_INFINITY,
+                                Float.POSITIVE_INFINITY
+                            ), // bottom-right
+                            end = androidx.compose.ui.geometry.Offset(0f, 0f) // top-left
+                        )
+                    )
+            ) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3),
                 modifier = Modifier
@@ -69,6 +89,7 @@ fun MarketScreen(navController: NavController) {
                         navController.navigate(Screen.CategoryDetail.createRoute(category.id))
                     }
                 }
+            }
             }
         }
     }

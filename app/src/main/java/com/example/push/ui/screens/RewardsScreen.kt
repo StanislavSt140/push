@@ -2,6 +2,7 @@ package com.example.push.ui.screens
 
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,6 +10,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -23,7 +25,10 @@ import kotlinx.coroutines.launch
 fun RewardsScreen(navController: NavController) {
     val rewards = remember { mutableStateOf(emptyList<RewardItem>()) }
     val scope = rememberCoroutineScope()
-
+    val gradientColors = listOf(
+        Color(0xFFFF4081),  // Pink
+        Color(0xFF1E0F4F)   // Dark Purple
+    )
     LaunchedEffect(Unit) {
         scope.launch {
             try {
@@ -39,6 +44,20 @@ fun RewardsScreen(navController: NavController) {
     }
 
     AppHeader(navController, "Система заохочення") {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.linearGradient(
+                        colors = gradientColors,
+                        start = androidx.compose.ui.geometry.Offset(
+                            Float.POSITIVE_INFINITY,
+                            Float.POSITIVE_INFINITY
+                        ), // bottom-right
+                        end = androidx.compose.ui.geometry.Offset(0f, 0f) // top-left
+                    )
+                )
+        ) {
         Column(modifier = Modifier.fillMaxSize().padding(top = 104.dp, start = 8.dp, end = 8.dp)) {
             LazyColumn {
                 itemsIndexed(rewards.value) { index, reward ->
@@ -47,6 +66,7 @@ fun RewardsScreen(navController: NavController) {
                     }
                 }
             }
+        }
         }
     }
 }

@@ -16,6 +16,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -44,7 +45,10 @@ fun ComplaintsScreen(navController: NavController) {
     val userClass = userPrefs.getUserClass()
 // 📌 Додаємо форматування дати
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
-
+    val gradientColors = listOf(
+        Color(0xFFFF4081),  // Pink
+        Color(0xFF1E0F4F)   // Dark Purple
+    )
     LaunchedEffect(Unit) {
         scope.launch {
             try {
@@ -59,6 +63,7 @@ fun ComplaintsScreen(navController: NavController) {
     }
 
     AppHeader(navController, "Скарги") {
+
         Scaffold(
             floatingActionButton = {
                 FloatingActionButton(
@@ -70,16 +75,32 @@ fun ComplaintsScreen(navController: NavController) {
                 }
             }
         ) { paddingValues ->
-            Column(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(top = 76.dp)) {
-                LazyColumn {
-                    itemsIndexed(complaints.value) { index, complaint ->
-                        ComplaintItemView(complaint) {
-                            navController.navigate(ComplaintsDetail.createRoute(complaint.id))
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.linearGradient(
+                            colors = gradientColors,
+                            start = androidx.compose.ui.geometry.Offset(
+                                Float.POSITIVE_INFINITY,
+                                Float.POSITIVE_INFINITY
+                            ), // bottom-right
+                            end = androidx.compose.ui.geometry.Offset(0f, 0f) // top-left
+                        )
+                    )
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxSize().padding(paddingValues).padding(top = 76.dp)
+                ) {
+                    LazyColumn {
+                        itemsIndexed(complaints.value) { index, complaint ->
+                            ComplaintItemView(complaint) {
+                                navController.navigate(ComplaintsDetail.createRoute(complaint.id))
+                            }
                         }
                     }
                 }
             }
-
             if (isDialogOpen) {
                 AlertDialog(
                     onDismissRequest = { isDialogOpen = false },
@@ -137,6 +158,7 @@ fun ComplaintsScreen(navController: NavController) {
                 )
             }
         }
+
     }
 }
 

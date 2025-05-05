@@ -6,17 +6,23 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.push.data.RetrofitClient
@@ -32,7 +38,10 @@ fun SchoolFormScreen(navController: NavController) {
     var showDialog by remember { mutableStateOf(false) }
     var showSnackbar by remember { mutableStateOf(false) }
     var snackbarMessage by remember { mutableStateOf("") }
-
+    val gradientColors = listOf(
+        Color(0xFFFF4081),  // Pink
+        Color(0xFF1E0F4F)   // Dark Purple
+    )
     LaunchedEffect(Unit) {
         scope.launch {
             val response = RetrofitClient.api.getSchoolForm()
@@ -43,6 +52,22 @@ fun SchoolFormScreen(navController: NavController) {
     }
 
     AppHeader(navController, formItem?.title ?: "Шкільна Форма") {
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.linearGradient(
+                        colors = gradientColors,
+                        start = androidx.compose.ui.geometry.Offset(
+                            Float.POSITIVE_INFINITY,
+                            Float.POSITIVE_INFINITY
+                        ), // bottom-right
+                        end = androidx.compose.ui.geometry.Offset(0f, 0f) // top-left
+                    )
+                )
+        ) {
+
         Column(modifier = Modifier.fillMaxSize().padding(top = 104.dp, start = 16.dp, end = 16.dp)) {
             formItem?.let { form ->
                 Image(
@@ -55,11 +80,25 @@ fun SchoolFormScreen(navController: NavController) {
                 AndroidView(factory = { context ->
                     TextView(context).apply {
                         text = Html.fromHtml(form.content, Html.FROM_HTML_MODE_COMPACT)
+                        setTextColor(Color.White.toArgb())
                     }
                 })
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Button(onClick = { showDialog = true }) {
+                Button(
+                    onClick = { showDialog = true },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFFF4081)
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 32.dp)
+                        .height(48.dp)
+                        .shadow(
+                            elevation = 8.dp,
+                            shape = RoundedCornerShape(24.dp)
+                        )
+                ) {
                     Text("Запропонувати побажання")
                 }
             } ?: CircularProgressIndicator(modifier = Modifier.padding(16.dp))
@@ -77,6 +116,7 @@ fun SchoolFormScreen(navController: NavController) {
                     Text(snackbarMessage, color = Color.White)
                 }
             }
+        }
         }
     }
 

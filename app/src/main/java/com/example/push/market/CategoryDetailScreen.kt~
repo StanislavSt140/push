@@ -194,7 +194,7 @@ fun CategoryDetailScreen(categoryId: Int, navController: NavController) {
                                         selectedFilter.value = filter
                                         isFilterMenuExpanded = false
                                     },
-                                    text = { Text(filter) }
+                                    text = { Text(filter, color = Color.White) }
                                 )
                             }
                         }

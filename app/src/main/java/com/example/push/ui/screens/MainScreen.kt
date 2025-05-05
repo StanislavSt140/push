@@ -60,6 +60,11 @@ import androidx.compose.ui.zIndex
 
 @Composable
 fun MainScreen(navController: NavController) {
+    val gradientColors = listOf(
+        Color(0xFFFF4081),  // Pink
+        Color(0xFF1E0F4F)   // Dark Purple
+    )
+
     AppHeader(navController, "Головна") {
         val newsList = remember { mutableStateOf(emptyList<NewsItem>()) }
         val scope = rememberCoroutineScope()
@@ -79,9 +84,22 @@ fun MainScreen(navController: NavController) {
             }
         }
 
-
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.linearGradient(
+                        colors = gradientColors,
+                        start = androidx.compose.ui.geometry.Offset(
+                            Float.POSITIVE_INFINITY,
+                            Float.POSITIVE_INFINITY
+                        ), // bottom-right
+                        end = androidx.compose.ui.geometry.Offset(0f, 0f) // top-left
+                    )
+                )
+        ) {
         LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(top = 104.dp),
+            modifier = Modifier.fillMaxSize().padding(top = 98.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp) // 
         ) {
             item {
@@ -98,6 +116,7 @@ fun MainScreen(navController: NavController) {
             item { NewsSection(newsList.value, navController) }
 
             item { SchoolAdvantagesSection() } // 
+        }
         }
 
     }

@@ -23,7 +23,10 @@ import kotlinx.coroutines.launch
 fun RewardsScreen(navController: NavController) {
     val rewards = remember { mutableStateOf(emptyList<RewardItem>()) }
     val scope = rememberCoroutineScope()
-
+    val gradientColors = listOf(
+        Color(0xFFFF4081),  // Pink
+        Color(0xFF1E0F4F)   // Dark Purple
+    )
     LaunchedEffect(Unit) {
         scope.launch {
             try {
@@ -39,7 +42,7 @@ fun RewardsScreen(navController: NavController) {
     }
 
     AppHeader(navController, "Система заохочення") {
-        Column(modifier = Modifier.fillMaxSize().padding(top = 104.dp, start = 16.dp, end = 16.dp)) {
+        Column(modifier = Modifier.fillMaxSize().padding(top = 104.dp, start = 8.dp, end = 8.dp)) {
             LazyColumn {
                 itemsIndexed(rewards.value) { index, reward ->
                     RewardItemView(reward) {

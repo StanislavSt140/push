@@ -1,6 +1,7 @@
 package com.example.push.ui.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -20,6 +21,7 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -34,6 +36,10 @@ import kotlinx.coroutines.launch
 fun ShopScreen(navController: NavController) {
     val products = remember { mutableStateOf(emptyList<ProductItem>()) }
     val scope = rememberCoroutineScope()
+    val gradientColors = listOf(
+        Color(0xFFFF4081),  // Pink
+        Color(0xFF1E0F4F)   // Dark Purple
+    )
 
     LaunchedEffect(Unit) {
         scope.launch {
@@ -49,7 +55,33 @@ fun ShopScreen(navController: NavController) {
     }
 
     AppHeader(navController, "Push School Shop") {
-        Column(modifier = Modifier.fillMaxSize().padding(top = 104.dp, start = 16.dp, end = 16.dp)) { // ⬅ Менші відступи!
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.linearGradient(
+                        colors = gradientColors,
+                        start = androidx.compose.ui.geometry.Offset(
+                            Float.POSITIVE_INFINITY,
+                            Float.POSITIVE_INFINITY
+                        ), // bottom-right
+                        end = androidx.compose.ui.geometry.Offset(0f, 0f) // top-left
+                    )
+                )
+        ) {
+        Column(modifier = Modifier.fillMaxSize()
+            .padding(top = 104.dp, start = 16.dp, end = 16.dp, bottom = 40.dp)
+            .background(
+                Brush.linearGradient(
+                    colors = gradientColors,
+                    start = androidx.compose.ui.geometry.Offset(
+                        Float.POSITIVE_INFINITY,
+                        Float.POSITIVE_INFINITY
+                    ), // bottom-right
+                    end = androidx.compose.ui.geometry.Offset(0f, 0f) // top-left
+                )
+            )
+        ) { // ⬅ Менші відступи!
             if (products.value.isNotEmpty()) {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
@@ -69,6 +101,7 @@ fun ShopScreen(navController: NavController) {
                 }
             }
         }
+        }
     }
 }
 
@@ -80,7 +113,7 @@ fun ProductCard(product: ProductItem, onClick: () -> Unit) {
             .padding(0.dp) // ⬅ Мінімальні відступи між картками!
             .clickable { onClick() },
         elevation = CardDefaults.elevatedCardElevation(10.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = Color.White),
     ) {
         Column(modifier = Modifier.padding(10.dp)) {
             Image(
