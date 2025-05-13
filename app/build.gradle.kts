@@ -14,7 +14,7 @@ android {
         //noinspection EditedTargetSdkVersion
         targetSdk = 35
         versionCode = 1
-        versionName = "1.02"
+        versionName = "1.03"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -68,5 +68,8 @@ dependencies {
     implementation ("androidx.compose.ui:ui:1.2.1")
     implementation ("androidx.compose.material:material:1.2.1")
     implementation ("androidx.compose.ui:ui-tooling-preview:1.2.1")
+    implementation ("com.google.android.material:material:1.11.0")
+    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 }
 
